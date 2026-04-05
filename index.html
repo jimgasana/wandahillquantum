@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>:WANDAHILL: QUANTUM</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Pro:ital,wght@0,200;0,300;0,400;1,300;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#03020f;--cyan:#00e5ff;--violet:#b44dff;--gold:#ffd166;--green:#00ffaa;
+  --white:#e8e8f8;
+  --fd:'Cinzel Decorative',serif;--fb:'Crimson Pro',serif;--fm:'Share Tech Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--void);color:var(--white);font-family:var(--fb);overflow-x:hidden;cursor:none}
+@media(hover:none){body{cursor:auto}}
+
+/* GRAIN */
+body::before{content:'';position:fixed;inset:0;z-index:1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");background-size:180px;pointer-events:none;opacity:.45}
+
+/* CURSOR */
+#cursor,#cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%)}
+#cursor{width:10px;height:10px;background:var(--cyan);mix-blend-mode:screen;box-shadow:0 0 12px var(--cyan);transition:width .15s,height .15s,background .2s;z-index:10000}
+#cursor-ring{width:34px;height:34px;border:1px solid rgba(0,229,255,.35);z-index:9999;transition:left .08s,top .08s}
+@media(hover:none){#cursor,#cursor-ring{display:none}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(3,2,15,.95),transparent);backdrop-filter:blur(6px)}
+.nav-logo{font-family:var(--fd);font-size:clamp(.5rem,.85vw,.7rem);letter-spacing:.2em;color:var(--cyan);text-shadow:0 0 16px var(--cyan);text-decoration:none;flex-shrink:0}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-family:var(--fm);font-size:.55rem;letter-spacing:.18em;color:rgba(232,232,248,.35);text-decoration:none;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover{color:var(--cyan)}
+
+/* HAMBURGER */
+#nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;z-index:600}
+#nav-toggle span{display:block;width:24px;height:1.5px;background:var(--cyan);transition:all .3s;box-shadow:0 0 6px var(--cyan)}
+#nav-toggle.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+#nav-toggle.open span:nth-child(2){opacity:0}
+#nav-toggle.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+/* MOBILE MENU */
+#mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:400;background:rgba(3,2,15,.97);flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;backdrop-filter:blur(12px)}
+#mobile-menu.open{display:flex}
+#mobile-menu a{font-family:var(--fd);font-size:clamp(1rem,4vw,1.4rem);letter-spacing:.2em;color:rgba(232,232,248,.5);text-decoration:none;transition:color .3s,text-shadow .3s}
+#mobile-menu a:hover,#mobile-menu a:active{color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
+#mobile-menu .m-close{font-family:var(--fm);font-size:.6rem;letter-spacing:.4em;color:rgba(0,229,255,.3);margin-top:2rem;cursor:pointer;border:none;background:none;text-transform:uppercase}
+
+@media(max-width:820px){
+  .nav-links{display:none}
+  #nav-toggle{display:flex}
+}
+@media(min-width:821px){
+  #mobile-menu{display:none!important}
+}
+
+/* SECTIONS */
+section{position:relative;padding:clamp(4rem,8vw,7rem) clamp(1.2rem,4vw,4rem);overflow:hidden}
+.s-num{font-family:var(--fm);font-size:clamp(.45rem,.7vw,.55rem);letter-spacing:.4em;color:rgba(0,229,255,.28);text-transform:uppercase;margin-bottom:.55rem;display:block}
+.s-title{font-family:var(--fd);font-size:clamp(1.5rem,4.5vw,3.2rem);font-weight:700;line-height:1.1;margin-bottom:1.3rem}
+.s-body{font-size:clamp(.88rem,1.6vw,1.1rem);font-weight:300;line-height:1.9;color:rgba(232,232,248,.68);max-width:58ch}
+.hint{font-family:var(--fm);font-size:clamp(.44rem,.65vw,.56rem);letter-spacing:.18em;color:rgba(0,229,255,.28);margin-top:1.1rem;line-height:1.8}
+
+/* REVEAL */
+.rev{opacity:0;transform:translateY(28px);transition:opacity .85s,transform .85s}
+.rev.vis{opacity:1;transform:translateY(0)}
+.rd1{transition-delay:.15s}.rd2{transition-delay:.3s}.rd3{transition-delay:.45s}
+
+/* ANIMATIONS */
+@keyframes fU{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes sP{0%,100%{opacity:.28}50%{opacity:.9}}
+
+/* ══════════ HERO ══════════ */
+#hero{width:100vw;height:100svh;min-height:500px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#hero-canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero-content{position:relative;z-index:2;text-align:center;pointer-events:none;padding:0 clamp(1rem,4vw,2rem);width:100%}
+.hero-eyebrow{font-family:var(--fm);font-size:clamp(.45rem,.8vw,.58rem);letter-spacing:clamp(.2em,.5em,.5em);color:var(--cyan);text-transform:uppercase;margin-bottom:1.2rem;opacity:0;animation:fU 1s .5s forwards}
+.hero-title{font-family:var(--fd);font-size:clamp(1.6rem,7vw,5.5rem);font-weight:900;line-height:1.05;background:linear-gradient(135deg,#fff 0%,var(--cyan) 32%,var(--violet) 66%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;animation:fU 1.2s .8s forwards;filter:drop-shadow(0 0 24px rgba(0,229,255,.25))}
+.hc{-webkit-text-fill-color:var(--cyan);color:var(--cyan);text-shadow:0 0 16px var(--cyan)}
+.hero-sub{font-family:var(--fb);font-style:italic;font-size:clamp(.8rem,2vw,1.15rem);font-weight:200;color:rgba(232,232,248,.5);margin-top:.8rem;opacity:0;animation:fU 1s 1.2s forwards}
+.hero-tag{font-family:var(--fm);font-size:clamp(.44rem,.7vw,.58rem);letter-spacing:clamp(.1em,.28em,.28em);color:rgba(255,209,102,.42);margin-top:.6rem;opacity:0;animation:fU 1s 1.5s forwards}
+.scroll-ind{margin-top:2rem;display:flex;flex-direction:column;align-items:center;gap:.35rem;font-family:var(--fm);font-size:.48rem;letter-spacing:.3em;color:rgba(0,229,255,.32);opacity:0;animation:fU 1s 1.8s forwards}
+.s-line{width:1px;height:44px;background:linear-gradient(to bottom,var(--cyan),transparent);animation:sP 2s ease-in-out infinite}
+
+/* ══════════ SIGHT READER ══════════ */
+#sight-reader{background:var(--void);min-height:100svh}
+#reader-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#reader-header{position:relative;z-index:10;padding:clamp(4rem,8vw,5rem) clamp(1.2rem,4vw,4rem) clamp(1.5rem,3vw,2rem);text-align:center;background:linear-gradient(to bottom,rgba(3,2,15,.96) 0%,rgba(3,2,15,.5) 70%,transparent 100%)}
+#reader-header h2{font-family:var(--fd);font-size:clamp(.95rem,2.5vw,1.8rem);color:var(--gold);text-shadow:0 0 24px rgba(255,209,102,.4);letter-spacing:.1em}
+#reader-header p{font-family:var(--fm);font-size:clamp(.44rem,.65vw,.55rem);letter-spacing:.28em;color:rgba(255,209,102,.32);margin-top:.4rem;text-transform:uppercase}
+
+#reader-orbital{position:absolute;top:1.2rem;right:clamp(1.2rem,3vw,4rem);z-index:20;width:44px;height:44px}
+#reader-orbital svg{width:100%;height:100%}
+
+#reader-body{position:relative;z-index:10;display:grid;grid-template-columns:1fr 300px;gap:2.5rem;padding:1.5rem clamp(1.2rem,4vw,4rem) 3rem;align-items:start}
+@media(max-width:900px){#reader-body{grid-template-columns:1fr;gap:1.5rem}}
+
+#reader-text-pane{max-height:75vh;overflow-y:auto;padding-right:1rem;scroll-behavior:smooth;overscroll-behavior:contain}
+#reader-text-pane::-webkit-scrollbar{width:2px}
+#reader-text-pane::-webkit-scrollbar-thumb{background:rgba(0,229,255,.18)}
+@media(max-width:900px){#reader-text-pane{max-height:none;overflow-y:visible;padding-right:0}}
+
+.reader-chapter-title{font-family:var(--fd);font-size:clamp(.9rem,2.2vw,1.5rem);color:var(--gold);text-shadow:0 0 20px rgba(255,209,102,.35);margin:2.5rem 0 1.3rem;padding-bottom:.9rem;border-bottom:1px solid rgba(255,209,102,.1);letter-spacing:.07em;opacity:0;transform:translateY(18px);transition:opacity .8s,transform .8s}
+.reader-chapter-title.vis{opacity:1;transform:translateY(0)}
+.ch-deco{display:block;font-family:var(--fm);font-size:clamp(.38rem,.55vw,.5rem);letter-spacing:.45em;color:rgba(255,209,102,.28);text-transform:uppercase;margin-bottom:.5rem}
+
+.r-para{font-family:var(--fb);font-size:clamp(.88rem,1.5vw,1.12rem);font-weight:300;line-height:2;color:rgba(232,232,248,.68);margin-bottom:1.8rem;padding:1.2rem 1.5rem;border-left:2px solid rgba(0,229,255,.06);opacity:0;transform:translateY(16px);transition:opacity .7s,transform .7s,border-color .4s,background .35s;cursor:default}
+.r-para.vis{opacity:1;transform:translateY(0)}
+.r-para.active{border-left-color:rgba(255,209,102,.38);background:rgba(255,209,102,.016);color:rgba(232,232,248,.85)}
+.r-para.active::before{content:'';display:block;height:1px;margin:-1.2rem -1.5rem 1rem;background:linear-gradient(90deg,transparent,rgba(255,209,102,.28),transparent)}
+
+/* QUANTUM TERMS */
+.qt{color:var(--cyan);text-shadow:0 0 7px rgba(0,229,255,.28);cursor:pointer;border-bottom:1px solid rgba(0,229,255,.22);transition:color .2s}
+.qt.gold{color:var(--gold);text-shadow:0 0 7px rgba(255,209,102,.28);border-bottom-color:rgba(255,209,102,.22)}
+.qt.violet{color:var(--violet);text-shadow:0 0 7px rgba(180,77,255,.28);border-bottom-color:rgba(180,77,255,.22)}
+.qt.green{color:var(--green);text-shadow:0 0 6px rgba(0,255,170,.22);border-bottom-color:rgba(0,255,170,.18)}
+
+/* QUANTUM POPUP */
+#qt-popup{position:fixed;z-index:800;max-width:min(290px,90vw);background:rgba(7,5,26,.97);border:1px solid rgba(0,229,255,.2);border-radius:3px;padding:.9rem 1.1rem;pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity .22s,transform .22s;backdrop-filter:blur(12px)}
+#qt-popup.show{opacity:1;transform:translateY(0)}
+.qp-label{font-family:var(--fd);font-size:clamp(.6rem,.9vw,.72rem);color:var(--gold);margin-bottom:.45rem;letter-spacing:.09em}
+.qp-formula{font-family:var(--fm);font-size:clamp(.52rem,.75vw,.62rem);color:rgba(0,229,255,.82);line-height:1.65;margin-bottom:.45rem;white-space:pre-line}
+.qp-desc{font-family:var(--fb);font-size:clamp(.76rem,1.1vw,.84rem);font-style:italic;color:rgba(232,232,248,.48);line-height:1.55}
+/* Mobile: tap popup floats center bottom */
+@media(hover:none){
+  #qt-popup{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%) translateY(8px);top:auto;max-width:min(340px,92vw);pointer-events:auto}
+  #qt-popup.show{transform:translateX(-50%) translateY(0)}
+  #qt-close-btn{display:flex}
+}
+#qt-close-btn{display:none;justify-content:flex-end;margin-top:.5rem}
+#qt-close-btn button{font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;background:none;border:1px solid rgba(0,229,255,.2);color:rgba(0,229,255,.5);padding:.2rem .5rem;cursor:pointer}
+
+/* ANNOTATION PANEL */
+#reader-annotation{position:sticky;top:2rem;background:rgba(7,5,26,.82);border:1px solid rgba(0,229,255,.1);border-radius:3px;padding:1.3rem;backdrop-filter:blur(8px)}
+@media(max-width:900px){#reader-annotation{position:relative;top:0}}
+.ann-title{font-family:var(--fd);font-size:clamp(.6rem,.9vw,.7rem);color:var(--cyan);letter-spacing:.14em;margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid rgba(0,229,255,.1)}
+.ann-concept{font-family:var(--fm);font-size:clamp(1rem,1.5vw,1.3rem);color:var(--gold);text-shadow:0 0 18px rgba(255,209,102,.35);margin-bottom:.45rem}
+.ann-formula{font-family:var(--fm);font-size:clamp(.52rem,.75vw,.62rem);color:rgba(0,229,255,.72);line-height:1.75;white-space:pre-line;margin-bottom:.7rem}
+.ann-desc{font-family:var(--fb);font-size:clamp(.8rem,1.1vw,.88rem);font-style:italic;color:rgba(232,232,248,.42);line-height:1.65}
+.ann-prog{margin-top:1rem;padding-top:.9rem;border-top:1px solid rgba(0,229,255,.07)}
+.ann-prog-label{font-family:var(--fm);font-size:.48rem;letter-spacing:.18em;color:rgba(232,232,248,.18);text-transform:uppercase}
+.ann-prog-bar{height:2px;background:rgba(0,229,255,.08);border-radius:1px;overflow:hidden;margin-top:.35rem}
+.ann-prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--violet));width:0%;transition:width .5s}
+
+/* ══════════ AWAKENING ══════════ */
+#awakening{background:radial-gradient(ellipse at 30% 50%,rgba(180,77,255,.07),transparent 60%),var(--void);min-height:80svh}
+.aw-layout{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,5rem);align-items:center}
+@media(max-width:768px){.aw-layout{grid-template-columns:1fr}}
+.aw-title{color:var(--violet);text-shadow:0 0 32px rgba(180,77,255,.38)}
+.eq-block{margin-top:1.4rem;padding:1.1rem 1.4rem;border-left:2px solid var(--violet);background:rgba(180,77,255,.04);font-family:var(--fm);font-size:clamp(.62rem,.9vw,.75rem);color:rgba(180,77,255,.78);line-height:2}
+#awakening-canvas{width:100%;height:clamp(240px,40vw,440px);border:1px solid rgba(0,229,255,.07);border-radius:3px;touch-action:none}
+
+/* ══════════ BLUEPRINT ══════════ */
+#blueprint{background:radial-gradient(ellipse at 60% 30%,rgba(0,229,255,.05),transparent 55%),var(--void)}
+.bp-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,.032) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.032) 1px,transparent 1px);background-size:52px 52px;pointer-events:none}
+.bp-layout{display:grid;grid-template-columns:1fr 1.2fr;gap:clamp(2rem,5vw,5rem);align-items:start;position:relative;z-index:1}
+@media(max-width:768px){.bp-layout{grid-template-columns:1fr}}
+.bp-title{color:var(--cyan);text-shadow:0 0 32px rgba(0,229,255,.38)}
+#blueprint-canvas{width:100%;height:clamp(260px,42vw,480px);touch-action:none}
+.spec-list{margin-top:1.8rem;list-style:none;display:flex;flex-direction:column;gap:.65rem}
+.spec-list li{font-family:var(--fm);font-size:clamp(.6rem,.85vw,.7rem);color:rgba(0,229,255,.52);letter-spacing:.07em;padding-bottom:.65rem;border-bottom:1px solid rgba(0,229,255,.06);display:flex;gap:.65rem;line-height:1.6}
+.spec-list li::before{content:attr(data-n);color:var(--cyan);opacity:.3;flex-shrink:0}
+
+/* ══════════ ILLUMINATION ══════════ */
+#illumination{background:radial-gradient(ellipse at 50% 50%,rgba(255,209,102,.05),transparent 58%),var(--void);text-align:center}
+.ill-title{color:var(--gold);text-shadow:0 0 50px rgba(255,209,102,.45)}
+#light-canvas{width:100%;height:clamp(220px,38vw,440px);margin:2.5rem 0;touch-action:none;display:block}
+.theory-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:1.8rem;text-align:left}
+@media(max-width:640px){.theory-grid{grid-template-columns:1fr}}
+.t-card{padding:1.3rem;border:1px solid rgba(255,209,102,.09);background:rgba(255,209,102,.02);border-radius:2px;transition:border-color .3s,background .3s;position:relative;overflow:hidden}
+.t-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);transition:transform .4s}
+.t-card:hover{border-color:rgba(255,209,102,.26);background:rgba(255,209,102,.04)}
+.t-card:hover::before{transform:scaleX(1)}
+.t-card h3{font-family:var(--fd);font-size:clamp(.65rem,.95vw,.72rem);letter-spacing:.1em;color:var(--gold);margin-bottom:.65rem}
+.t-card p{font-size:clamp(.82rem,1.2vw,.9rem);font-weight:300;line-height:1.8;color:rgba(232,232,248,.46)}
+
+/* ══════════ STORY ══════════ */
+#story-sec{background:radial-gradient(ellipse at 20% 70%,rgba(255,56,96,.04),transparent 48%),radial-gradient(ellipse at 80% 20%,rgba(180,77,255,.035),transparent 48%),var(--void)}
+.story-layout{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(2rem,5vw,5rem);align-items:start}
+@media(max-width:768px){.story-layout{grid-template-columns:1fr}}
+.s-para{font-size:clamp(.88rem,1.4vw,1.08rem);font-weight:300;line-height:2;font-style:italic;color:rgba(232,232,248,.58);margin-bottom:1.4rem;padding-left:1.3rem;border-left:1px solid rgba(255,209,102,.16)}
+.s-para strong{font-style:normal;font-weight:400;color:var(--gold)}
+#story-canvas{width:100%;height:clamp(260px,42vw,500px);touch-action:none}
+
+/* ══════════ 3D FIELD ══════════ */
+#wh-field-section{padding:0;height:100svh;min-height:500px;display:flex;flex-direction:column;background:var(--void)}
+#wh-header{position:absolute;top:0;left:0;right:0;z-index:10;padding:clamp(.9rem,2vw,1.4rem) clamp(1.2rem,3vw,3rem);background:linear-gradient(to bottom,rgba(3,2,15,.9),transparent);pointer-events:none}
+#wh-header h2{font-family:var(--fd);font-size:clamp(.8rem,2.2vw,1.5rem);color:var(--gold);text-shadow:0 0 24px rgba(255,209,102,.38)}
+#wh-header p{font-family:var(--fm);font-size:clamp(.4rem,.65vw,.55rem);letter-spacing:.2em;color:rgba(255,209,102,.3);margin-top:.3rem}
+#wh-field{flex:1;position:relative;overflow:hidden}
+#wh-canvas{display:block;width:100%!important;height:100%!important;touch-action:none}
+
+#wh-hud{position:absolute;top:clamp(60px,10vw,80px);right:clamp(.8rem,1.5vw,1.5rem);z-index:20;width:clamp(175px,24vw,270px);pointer-events:none}
+.hud-panel{background:rgba(3,2,15,.86);border:1px solid rgba(0,229,255,.12);border-radius:3px;padding:.85rem;margin-bottom:.55rem;backdrop-filter:blur(8px)}
+.hud-t{font-family:var(--fm);font-size:clamp(.42rem,.65vw,.5rem);letter-spacing:.28em;color:var(--cyan);text-transform:uppercase;margin-bottom:.35rem;padding-bottom:.28rem;border-bottom:1px solid rgba(0,229,255,.08)}
+.hud-n{font-family:var(--fd);font-size:clamp(.6rem,.9vw,.7rem);color:var(--gold);margin-bottom:.18rem}
+.hud-f{font-family:var(--fm);font-size:clamp(.46rem,.68vw,.56rem);color:rgba(0,229,255,.68);line-height:1.55;white-space:pre-line}
+.hud-d{font-family:var(--fb);font-size:clamp(.7rem,1vw,.78rem);font-style:italic;color:rgba(232,232,248,.38);margin-top:.3rem;line-height:1.5}
+.hud-c{font-family:var(--fm);font-size:clamp(.4rem,.6vw,.5rem);color:rgba(232,232,248,.22);letter-spacing:.07em}
+
+/* Hide HUD on very small screens */
+@media(max-width:400px){#wh-hud{display:none}}
+
+#wh-ctrl{position:absolute;bottom:.8rem;left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:.5rem;align-items:center;background:rgba(3,2,15,.78);border:1px solid rgba(0,229,255,.09);border-radius:3px;padding:.5rem 1rem;pointer-events:none;backdrop-filter:blur(6px);white-space:nowrap}
+.ck{font-family:var(--fm);font-size:clamp(.42rem,.62vw,.52rem);background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.17);padding:.16rem .34rem;border-radius:2px;color:var(--cyan)}
+.cl{font-family:var(--fm);font-size:clamp(.4rem,.6vw,.48rem);color:rgba(232,232,248,.22);letter-spacing:.1em}
+.ck-sep{color:rgba(0,229,255,.12);font-family:var(--fm);font-size:.55rem}
+@media(hover:none){#wh-ctrl{display:none}}
+
+/* JOYSTICKS */
+#tj-l,#tj-r{display:none;position:absolute;bottom:clamp(1rem,4vw,2rem);z-index:30;width:clamp(70px,18vw,100px);height:clamp(70px,18vw,100px);border-radius:50%;border:2px solid rgba(0,229,255,.18);background:rgba(0,229,255,.05);touch-action:none}
+#tj-l{left:clamp(1rem,4vw,2rem)}
+#tj-r{right:clamp(1rem,4vw,2rem)}
+.j-thumb{position:absolute;width:32px;height:32px;border-radius:50%;background:rgba(0,229,255,.28);border:1px solid var(--cyan);top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 8px var(--cyan);transition:transform .05s}
+@media(hover:none){#tj-l,#tj-r{display:block}}
+
+/* ══════════ CONVERGENCE ══════════ */
+#convergence{min-height:80svh;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--void)}
+#conv-canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.conv-content{position:relative;z-index:2;max-width:680px;padding:0 clamp(1.2rem,4vw,2rem)}
+.conv-title{font-size:clamp(1.8rem,5.5vw,4.2rem);background:linear-gradient(135deg,var(--cyan),var(--violet),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1.3rem}
+.conv-content p{font-size:clamp(.88rem,1.4vw,1.05rem);font-weight:300;font-style:italic;line-height:2;color:rgba(232,232,248,.5);margin-bottom:2rem}
+.glyph-row{display:flex;gap:1.2rem;justify-content:center;font-family:var(--fm);font-size:.9rem;color:rgba(0,229,255,.2);letter-spacing:.32em;margin:1.2rem 0;flex-wrap:wrap}
+
+/* ══════════ FOOTER ══════════ */
+footer{padding:clamp(2.5rem,5vw,3.5rem) clamp(1.5rem,4vw,3rem) clamp(2rem,4vw,2.5rem);border-top:1px solid rgba(0,229,255,.05)}
+.footer-inner{display:flex;flex-direction:column;align-items:center;gap:1.2rem;text-align:center}
+.footer-sigil{font-family:var(--fm);font-size:clamp(.42rem,.6vw,.52rem);letter-spacing:.4em;color:rgba(0,229,255,.12);text-transform:uppercase}
+.footer-div{width:160px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,209,102,.16),transparent)}
+.footer-ip{font-family:var(--fm);font-size:clamp(.44rem,.6vw,.5rem);letter-spacing:.13em;line-height:2.2;color:rgba(232,232,248,.15)}
+.ip-name{color:rgba(255,209,102,.3);font-size:clamp(.48rem,.68vw,.56rem);letter-spacing:.22em;display:block;margin-bottom:.2rem}
+.ip-accent{color:rgba(0,229,255,.17)}
+.footer-bottom{font-family:var(--fm);font-size:clamp(.4rem,.55vw,.43rem);letter-spacing:.25em;color:rgba(232,232,248,.08);text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- QUANTUM POPUP -->
+<div id="qt-popup">
+  <div class="qp-label" id="qp-label"></div>
+  <div class="qp-formula" id="qp-formula"></div>
+  <div class="qp-desc" id="qp-desc"></div>
+  <div id="qt-close-btn"><button onclick="closePopup()">CLOSE</button></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">:WANDAHILL: QUANTUM</a>
+  <ul class="nav-links">
+    <li><a href="#sight-reader">The Sight</a></li>
+    <li><a href="#awakening">Origin</a></li>
+    <li><a href="#wh-field-section">The Field</a></li>
+    <li><a href="#illumination">Light</a></li>
+    <li><a href="#convergence">Convergence</a></li>
+  </ul>
+  <button id="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu">
+  <a href="#sight-reader" onclick="closeMenu()">The Sight</a>
+  <a href="#awakening" onclick="closeMenu()">Origin</a>
+  <a href="#wh-field-section" onclick="closeMenu()">The Field</a>
+  <a href="#blueprint" onclick="closeMenu()">Blueprint</a>
+  <a href="#illumination" onclick="closeMenu()">Light</a>
+  <a href="#story-sec" onclick="closeMenu()">Story</a>
+  <a href="#convergence" onclick="closeMenu()">Convergence</a>
+  <button class="m-close" onclick="closeMenu()">CLOSE</button>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <p class="hero-eyebrow">The Space of Imagination During The Time of Contract</p>
+    <h1 class="hero-title"><span class="hc">:</span>WANDAHILL<span class="hc">:</span><br><span style="font-size:.58em;letter-spacing:.07em">QUANTUM</span></h1>
+    <p class="hero-sub">Where particles write stories. Where Sight builds worlds. Where light is the first language.</p>
+    <p class="hero-tag">psi(space x time) = imagination raised to infinity</p>
+    <div class="scroll-ind"><div class="s-line"></div><span>Enter</span></div>
+  </div>
+</section>
+
+<!-- SIGHT READER -->
+<section id="sight-reader">
+  <canvas id="reader-canvas"></canvas>
+  <div id="reader-header">
+    <h2>The Reel Nature of The Sight</h2>
+    <p>Written by JIMGAS for the benefit of all SEERS</p>
+  </div>
+  <div id="reader-orbital">
+    <svg viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="20" stroke="rgba(255,209,102,0.1)" stroke-width="1"/>
+      <circle id="orbital-prog" cx="24" cy="24" r="20" stroke="url(#og)" stroke-width="1.5" stroke-dasharray="125.7" stroke-dashoffset="125.7" stroke-linecap="round" transform="rotate(-90 24 24)"/>
+      <defs><linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#ffd166"/></linearGradient></defs>
+    </svg>
+  </div>
+  <div id="reader-body">
+    <div id="reader-text-pane"></div>
+    <div id="reader-annotation">
+      <div class="ann-title">Quantum Correlation</div>
+      <div class="ann-concept" id="ann-concept">Sight = Observer</div>
+      <div class="ann-formula" id="ann-formula">O|psi> = measurement
+The act of Seeing collapses
+possibility into certainty</div>
+      <div class="ann-desc" id="ann-desc">The Sight is the quantum measurement operator acting upon the superposition of Space and Time.</div>
+      <div class="ann-prog"><div class="ann-prog-label">Reading Progress</div><div class="ann-prog-bar"><div class="ann-prog-fill" id="read-prog-fill"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- AWAKENING -->
+<section id="awakening">
+  <div class="aw-layout">
+    <div class="rev">
+      <span class="s-num">01 ORIGIN</span>
+      <h2 class="s-title aw-title">The Quantum Awakening</h2>
+      <p class="s-body">Before the first blueprint was drawn, before the first photon ignited the void, there was the desire. Feeling plus emotion. The heart of an idea that existed before form, before shape, before the seven gates of time opened.</p>
+      <div class="eq-block">desire = feeling + emotion<br>idea = (desire + fire) squared<br>manifestation = soul impulse + idea<br>miracle = pi divided by time<br>law = one = pi</div>
+      <p class="hint">Move or touch the field to warp the probability cloud. Tap to collapse the wave.</p>
+    </div>
+    <canvas id="awakening-canvas" class="rev rd1"></canvas>
+  </div>
+</section>
+
+<!-- BLUEPRINT -->
+<section id="blueprint">
+  <div class="bp-grid-bg"></div>
+  <div class="bp-layout">
+    <div class="rev">
+      <span class="s-num">02 STRUCTURE</span>
+      <h2 class="s-title bp-title">The Seer's Blueprint</h2>
+      <p class="s-body">Every universe is a construction project. The Seer studies the probability field, drafts the scaffolding of spacetime. Each beam is a law. Each joint is a constant of nature. Four agents cycle material, labor, design, and task in a closed loop of eternal creation.</p>
+      <ul class="spec-list">
+        <li data-n="A1">material(out) + labor(in) complete loop</li>
+        <li data-n="A2">labor(out) + design(in) tensor product</li>
+        <li data-n="A3">design(out) + task(in) gradient applied</li>
+        <li data-n="A4">task(out) + material(in) AMS loop closes</li>
+        <li data-n="432">Hz synchronization reduces Heart Rate</li>
+        <li data-n="528">Hz biohealing increases Heart Rate</li>
+      </ul>
+      <p class="hint">Move or touch to rotate geometry. Tap to draw construction beams.</p>
+    </div>
+    <canvas id="blueprint-canvas" class="rev rd2"></canvas>
+  </div>
+</section>
+
+<!-- ILLUMINATION -->
+<section id="illumination">
+  <div class="rev">
+    <span class="s-num" style="text-align:center;display:block">03 ILLUMINATION</span>
+    <h2 class="s-title ill-title">Light is the First Language</h2>
+    <p class="s-body" style="margin:0 auto;text-align:center">The Seer ignites the photon. Every ray is a sentence. Every shadow is a pause. The eyes see Matter when in actual fact looking at concentrated Light. What is truth? Light. How to know truth? Follow light.</p>
+    <p class="hint" style="text-align:center;margin:0 auto">Move or touch to aim the photon source. Tap to release a caustic burst.</p>
+  </div>
+  <canvas id="light-canvas" class="rev rd1"></canvas>
+  <div class="theory-grid">
+    <div class="t-card rev"><h3>Wave Nature</h3><p>sea = Motion = Superposition. Light interferes with itself. A single photon passes through two slits and writes a poem of probability.</p></div>
+    <div class="t-card rev rd1"><h3>Particle Soul</h3><p>space = Infinite = Interference. When you observe, the wave collapses. The quantum eye transforms possibility into certainty.</p></div>
+    <div class="t-card rev rd2"><h3>Law Eternal</h3><p>law = Eternal = Entanglement. darkness equals negative light. sin equals negative love. fear equals one divided by forgiveness.</p></div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section id="story-sec">
+  <div class="story-layout">
+    <div class="rev">
+      <span class="s-num">04 THE NARRATIVE</span>
+      <h2 class="s-title">Every Particle Has a Story</h2>
+      <p class="s-para">In the beginning, the Seer stood at the edge of the unformed void. In her hands she held the blueprints of a cosmos drawn not in ink, but in quantum probability. Every line was both a wall and a question.</p>
+      <p class="s-para">She placed the first photon. It did not travel in a straight line. It <strong>danced</strong>, exploring all possible paths simultaneously through the seven gates of time.</p>
+      <p class="s-para">And then she <strong>observed</strong>. The wave collapsed. Reality crystallized from possibility. The first shadow was cast, and in that shadow, the first <em>story</em> was written.</p>
+      <p class="s-para"><strong>This is WANDAHILL.</strong> Particle by particle. Story by story. A cathedral of meaning where every atom remembers why it exists.</p>
+      <p class="hint">Move or touch to attract the story field. Tap to scatter and reform.</p>
+    </div>
+    <canvas id="story-canvas" class="rev rd2"></canvas>
+  </div>
+</section>
+
+<!-- 3D FIELD -->
+<section id="wh-field-section">
+  <div id="wh-header">
+    <h2>:WANDAHILL: The Quantum Vector Field</h2>
+    <p>7 TIMES  12 SPACES  4 AGENTS  12 TORMENTS</p>
+  </div>
+  <div id="wh-field">
+    <canvas id="wh-canvas"></canvas>
+    <div id="wh-hud">
+      <div class="hud-panel">
+        <div class="hud-t">Nearest Node</div>
+        <div class="hud-n" id="hud-node">:WANDAHILL:</div>
+        <div class="hud-f" id="hud-form">Psi(s,t) = Sum alpha_i |s_i> x |t_i></div>
+        <div class="hud-d" id="hud-desc2">The Space of Imagination</div>
+      </div>
+      <div class="hud-panel">
+        <div class="hud-t">Position</div>
+        <div class="hud-c" id="hud-coords">x:0 y:8 z:25</div>
+        <div class="hud-f" id="hud-state">|psi> = superposition</div>
+      </div>
+    </div>
+    <div id="wh-ctrl">
+      <span class="ck">W A S D</span><span class="cl">MOVE</span>
+      <span class="ck-sep">·</span>
+      <span class="ck">ARROWS</span><span class="cl">LOOK</span>
+      <span class="ck-sep">·</span>
+      <span class="ck">SHIFT</span><span class="cl">BOOST</span>
+      <span class="ck-sep">·</span>
+      <span class="ck">Q E</span><span class="cl">UP DOWN</span>
+    </div>
+    <div id="tj-l"><div class="j-thumb" id="jlt"></div></div>
+    <div id="tj-r"><div class="j-thumb" id="jrt"></div></div>
+  </div>
+</section>
+
+<!-- CONVERGENCE -->
+<section id="convergence">
+  <canvas id="conv-canvas"></canvas>
+  <div class="conv-content">
+    <span class="s-num rev" style="display:block;margin-bottom:.8rem">05 CONVERGENCE</span>
+    <h2 class="s-title conv-title rev">All Converges in Light</h2>
+    <p class="rev rd1">Quantum mechanics is the architecture of possibility. Art is the structure of meaning. Stories are the light that illuminates the dark spaces between facts. And you the observer collapse it all into one irreducible truth.</p>
+    <div class="glyph-row rev rd2">psi  phi  omega  alpha  pi</div>
+    <p class="hint rev rd3" style="color:rgba(0,229,255,.3);text-align:center">Move or touch to warp the field. Tap to ignite a shockwave.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-sigil">:wandahill: quantum  psi(s,t) = imagination raised to infinity</div>
+    <div class="footer-div"></div>
+    <div class="footer-ip">
+      <span class="ip-name">Jimmÿ GASANA</span>
+      <span>Founder and CEO</span><br>
+      <span class="ip-accent">:wandahill:  ASC and Associates Ltd  Seersbay Ltd  Reelisway Ltd</span><br>
+      <span style="margin-top:.3rem;display:inline-block">Creator of <span style="color:rgba(0,229,255,.26)">AMS</span> Agents Management System</span><br>
+      <span style="display:inline-block;margin-top:.5rem;color:rgba(232,232,248,.08);font-size:.42rem;letter-spacing:.26em">ALL RIGHTS RESERVED  2026  IP PROTECTED ACROSS ALL JURISDICTIONS</span>
+    </div>
+    <div style="font-size:1rem;color:rgba(0,229,255,.07)">✦</div>
+    <div class="footer-bottom">The Space of Imagination During The Time of Contract</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ══════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════ */
+const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
+const PTSCALE = isMobile ? 0.45 : 1; // fewer particles on mobile
+
+function getTouch(e, cv){
+  const rc = cv.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return { x: t.clientX - rc.left, y: t.clientY - rc.top };
+}
+
+/* MOBILE MENU */
+const navToggle = document.getElementById('nav-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+navToggle.addEventListener('click', ()=>{
+  navToggle.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+function closeMenu(){
+  navToggle.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* CURSOR */
+const $c = document.getElementById('cursor'), $r = document.getElementById('cursor-ring');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; });
+(function ca(){ rx+=(mx-rx)*.13; ry+=(my-ry)*.13;
+  $c.style.left=mx+'px'; $c.style.top=my+'px';
+  $r.style.left=rx+'px'; $r.style.top=ry+'px';
+  requestAnimationFrame(ca); })();
+document.querySelectorAll('a,button,.t-card,.qt').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ $c.style.width='16px'; $c.style.height='16px'; $c.style.background='var(--violet)'; });
+  el.addEventListener('mouseleave',()=>{ $c.style.width='10px'; $c.style.height='10px'; $c.style.background='var(--cyan)'; });
+});
+
+/* SCROLL REVEAL */
+const revObs = new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});},{threshold:.1});
+document.querySelectorAll('.rev').forEach(el=>revObs.observe(el));
+
+/* ══════════════════════════════════════
+   QUANTUM TERM DATA
+══════════════════════════════════════ */
+const QT = {
+  'Sight':        {label:'The Sight = Quantum Observer',formula:'O|psi> = o|psi>\nMeasurement collapses state\nObserver creates reality',color:'cyan',desc:'The Sight is the quantum measurement operator. Every act of seeing collapses the wave function of possibility into a definite reality.'},
+  'Shape':        {label:'Shape = Position Eigenstate',formula:'|x>: position eigenstate\nDelta_x = 0, Delta_p = inf\nDefinite location in Space',color:'gold',desc:'Shape occupies a definite position in Space. It is the collapsed state of Form, the fixed eigenvalue of the position operator.'},
+  'Form':         {label:'Form = Momentum Eigenstate',formula:'|p>: momentum eigenstate\nDelta_p = 0, Delta_x = inf\nEternal motion in Time',color:'violet',desc:'Form is the momentum state of the idea in Time. Indefinite in position, infinite in motion. The dual of Shape.'},
+  'Space':        {label:'Space = Hilbert Space',formula:'H = all position states\nInfinite dimensional\nConfiguration space of all Shapes',color:'cyan',desc:'Space is the infinite-dimensional Hilbert space containing all possible position eigenstates.'},
+  'Time':         {label:'Time = Unitary Evolution',formula:'U(t) = e^(-iHt/h-bar)\nUnitary evolution operator\nPure quantum transformation',color:'violet',desc:'Time is the unitary evolution operator acting on all quantum states. It transforms Form through eternal motion.'},
+  'Energy':       {label:'Energy = Hamiltonian',formula:'H|psi> = ih-bar d|psi>/dt\nSchrodinger Equation\nMaster equation of becoming',color:'gold',desc:'The Hamiltonian is the total energy operator governing all quantum evolution. Energy IS the rate of change of the quantum state in Time.'},
+  'Light':        {label:'Light = Quantum of Action',formula:'E = hf = h-bar * omega\nPhoton energy quantized\nWave AND particle simultaneously',color:'gold',desc:'Light is both wave and particle. E = hf quantizes its energy per photon. It is the first language of the cosmos.'},
+  'Consciousness':{label:'Consciousness = Density Matrix',formula:'rho = Sum p_i|psi_i><psi_i|\nMixed quantum state\nAwareness = Tr(rho squared)',color:'cyan',desc:'Consciousness is the density matrix of all possible awareness states. Its purity measures the degree of conscious clarity.'},
+  'Will':         {label:'Will = Collapse Operator',formula:'M|psi> / ||M|psi>||\nProjective measurement\nWill selects the eigenstate',color:'violet',desc:'The Will acts as the measurement operator that collapses the superposition of possibilities into the chosen definite state.'},
+  'Seer':         {label:'Seer = Observer plus Apparatus',formula:'System = Seer tensor World\nEntanglement on observation\nObservation creates correlation',color:'gold',desc:'The Seer is both observer and measuring apparatus. Through entanglement, the Seer and Observed become inseparable quantum systems.'},
+  'Motion':       {label:'Motion = Momentum Operator',formula:'p = -ih-bar * nabla\nGenerator of spatial translations\nAll motion is quantum',color:'cyan',desc:'Motion is the momentum operator in quantum mechanics. It is the generator of spatial translations in quantum field theory.'},
+  'superposition':{label:'Superposition of Being',formula:'|psi> = alpha|Shape> + beta|Form>\n|alpha|^2 + |beta|^2 = 1\nSimultaneous Space and Time',color:'violet',desc:'Every object exists in superposition of Shape in Space and Form in Time until the Sight observes and collapses it.'},
+  'matter':       {label:'Matter = Concentrated Light',formula:'E = mc squared\nMass is frozen energy\nMatter = standing wave in field',color:'gold',desc:'Matter is concentrated light. E = mc squared reveals that mass is simply energy condensed by the square of light speed.'},
+  'law':          {label:'Law = Conservation Principle',formula:'dS/dt = 0 (Noether theorem)\nSymmetry yields conservation\nThe law is one = pi',color:'green',desc:'Every law of Nature corresponds to a symmetry of the quantum action. All symmetries stem from the single principle of least action.'},
+  'Isi':          {label:'Isi = The Quantum Field',formula:'|Isi> = integral over all |psi> dpsi\nThe vacuum of all possibility\nMother of all quantum states',color:'gold',desc:'Isi is the quantum field itself. She is the vacuum containing all possibilities, the ground state from which all particles of experience emerge.'},
+  'wave':         {label:'Wave Function',formula:'psi(x,t) = A * e^(i(kx-wt))\nProbability amplitude\n|psi|^2 = probability density',color:'cyan',desc:'The wave function describes the quantum state as a probability amplitude. Its square gives the probability of finding the object at position x.'},
+  'perception':   {label:'Perception = Measurement',formula:'Before: |psi> = superposition\nDuring: M applied to |psi>\nAfter: definite eigenvalue',color:'violet',desc:'Perception is a quantum measurement event. The act of perceiving collapses superposition into a definite experienced reality.'},
+  'gravity':      {label:'Gravity = Spacetime Curvature',formula:'G_uv + Lambda*g_uv = 8piG T_uv\nMass-energy curves spacetime\nGravitation = geometry of Being',color:'gold',desc:'Gravity is the curvature of spacetime caused by mass-energy. The Force that draws all manifested Ideas toward their Cause.'},
+};
+
+/* ══════════════════════════════════════
+   SIGHT TEXT (abbreviated for mobile perf, full content)
+══════════════════════════════════════ */
+const VIZ = [
+  {concept:'Particle Field',formula:'|psi> = Sum c_n|n>\nSuperposition',desc:'All quantum states exist simultaneously until observed.'},
+  {concept:'The Sight Observer',formula:'O|psi> = o|psi>\nCollapse on Measurement',desc:'Observation selects one reality from infinite possibility.'},
+  {concept:'Space = Hilbert Space',formula:'H = L^2(R^3)\nInfinite dimensions',desc:'Space is the infinite-dimensional quantum configuration space.'},
+  {concept:'Superposition',formula:'|psi> = alpha|0> + beta|1>\n|alpha|^2 + |beta|^2 = 1',desc:'Shape and Form coexist as quantum superposition.'},
+  {concept:'Energy = Hamiltonian',formula:'H|psi> = ih-bar dpsi/dt\nEnergy governs Time',desc:'The Hamiltonian is the quantum generator of time evolution.'},
+  {concept:'Consciousness',formula:'rho = Sum p_i|psi_i><psi_i|\nAwareness density',desc:'Consciousness is the density matrix of all awareness states.'},
+  {concept:'Light = E = hf',formula:'E_photon = h-bar*omega\nWave-particle duality',desc:'Light is both the messenger and the medium of quantum information.'},
+  {concept:'Law = Construction',formula:'delta_S = 0 (Noether)\nSymmetry yields Law',desc:'The Laws of Construction are the symmetries of the cosmic action.'},
+];
+
+const CHAPTERS = [
+{title:'Dedication',deco:'For all Seers',paras:[
+  {t:'My Dearest O.B, Hoping that our friendship is not counted as vain but a proof that this life did not bring us together by mere happenstance, rather, as surely as the Sun cycles the eons seeking its Sirian embrace, we also hop on its back, becoming that which we choose to be for ages that last an age.',v:0},
+  {t:'As I attempt to remind you of our past lives, allow me to pour my thoughts and imaginings before the majesty of your Sight, revealing to you the order of the Appearing. And should I be found worthy and sincere, my only wish is that you may once again awaken your truest Sight and once more be a Sun soaring for the lightly Nature of this most acclaimed appearing.',v:0},
+  {t:'In this treatise I have endeavored to bring before your intellect, that which is often perceived by the general public to be frameless and rather ominous in connotation. I am hopeful however that you will find my reasons subservient to the grace I have been offered by the Mother of Wisdom in this Cosmic play.',v:4},
+  {t:'To my dearest folks, those who stem from her depths and grow to be the heaven\'s head, those trees that summon the thunder, it is our Mother whose cries echo the realms in search of the forgotten remembrance. Heed ye then and listen to her voice. She is here to remind, to behold and to restore hope in order. In this Order of the Appearing, Isi is the Appearing.',v:6},
+]},
+{title:'Chapter I: Hearing of the Appearing',deco:'The Reel Nature of The Sight',paras:[
+  {t:'Often times when I am either asked or brought to envision Nature\'s Richness, I am quickly reminded of the supreme powers presently governing this very Nature I desire to contemplate. I am compelled to locate my own natural ability to SEE, for now I know at least one fact on which the entire factory stems from: I continuously recognize that I Am in Space at Present. This Rich Nature is manifesting inside Space and at the location of Time. There is not space without time after all.',v:2},
+  {t:'Consequently, as I see and apprehend this Appearing, the unfolding of the Sight gains prime authority over Hearing and all the other natural senses bestowed upon my natural body. For, it is with the sense of Sight that I can recognize the Object in Nature as having a shape that has a unique form in my Imagination.',v:1},
+  {t:'All the effects of light that are caused by Nature in this physical space, in turn cause all the forms of light in my Imagination in order to identify those shapes as effects of their cause. And consequently, causes me to sense this duality of Light which prompts the Sight to See the Shape of the Object and the Form of its Image.',v:6},
+  {t:'In this sense, One becomes Two or the One Object observed in Nature becomes a physical Shape and an imaginary Form. However, the sense of Sight remains confined within its own ability to see the Shape of the One physical object and its imaginary Form, by actively seeing outwards to the Object and passively seeing inwards to the Image.',v:3},
+  {t:'This is the Condition that establishes the Sight as the doorway and gatekeeper between the infinite physical universe before it and its eternal imaginary universe within it. Seeing one physical object becoming a form in the imagination that has a shape is the integrity of the Order of the Sight. Nature, the Appearing, Isi is this Order.',v:1},
+  {t:'One sight for the Two states of the Nature of the Sight. One being the Nature of the Sight itself to apprehend Infinity and Eternity as a whole, and Two being the Nature of the Sight to see both the Shape in the Infinite Space and the form in the Eternal Time, and hold them separate.',v:3},
+  {t:'Being the Nature of the Sight to see both sides to Nature, the Physical and the Imaginary side of Nature, it is only natural that the One Nature of wholeness takes precedence over the Two Natures of partiality. The Sight is Nature is Isi is Order.',v:1},
+  {t:'The state of the Physical Nature of the Object must therefore be defined by the ratio of its fixed atoms as appearing in the Space which the Object occupies and the present continuous motion of its electrons within and without the confinement of that One so-called fixed and same Space. This explains the notion of a Fixed Space and its Continuous formation Time.',v:0},
+  {t:'While our eyes Actively and Naturally project outwards One directionally in order to assimilate the Infinite dimension of Space, our Ears Naturally and Passively project inwards into the Eternal and Opposite Two dimensions of Time in its Past and Future.',v:2},
+  {t:'It is the impartial Nature of the Sight that Passively integrates the division formed in Time as it comes from opposite directions of the ears, and actively projects One united direction outward into Space through the eyes. Moreover, it is the Sight which is responsible to either Converge the illusion of the infinite oneness of all fixed atoms in Space and Diverge that oneness into Two equal illusions of the Eternal oppositions in Time.',v:3},
+  {t:'Having established the Sight as the doorway and Keeper of all the secrets, both within in Time and without in Space, it only follows that the energy on either side of the Sight is unchanging in its Infinite Shape yet Eternally changing in Form. Space creating Time forming Space through the Sight is the only fact that matters on one side and forms on the other side.',v:4},
+  {t:'Only a collection Matters. Whether a collection of atoms, rocks, trees, planets, you name it, the collection will manifest. This is because collecting is what a collection does unto our Sight and not what it is unto it. Outwardly, it does collect into Space. But inwardly, it is subject unto the movement of the individual forms that make up the shape of this collection in Time.',v:0},
+  {t:'From this Truth, I derive the notion that every Object I touch has an Energy within it created by the Space around it that only the Sight can witness. This notion justifies the reason why Time flows Eternally Inwards Colliding within its own perspective to Form Space expanding infinitely Outward.',v:4},
+  {t:'The Sight alone is the doorway and the Keeper of all the secrets, Omniscient Sustainer of the Energy and Law of Order, both in Time and Space. The Sight alone is the Eternal Divider and Infinite Unifier.',v:1},
+  {t:'The Flow of Energy passing through Space Converges towards the Sight Infinitely Creating every Physical Shape, is the Energy itself Cycling backwards and Diverging from the Sight creating every Form in the Imagination\'s Eternal Dimensions. The Objective Universe and the Subjective Omniverse are found nowhere else but in the Sight.',v:4},
+  {t:'The eyes see Matter when in actual fact looking at concentrated Light, or rather a Collection of Light forwarding Awareness, and see Light when looking at feeble Matter, or rather a Division of Matter Containing Conscious Intelligence. This is the Only Opposition that binds Matter or Shape to Space, and Light or Form to Time. The Energy however never Moved, only Perception Shifted.',v:6},
+  {t:'For Perception is the Great Divider and the Only Unifier of the never Moving yet ever Shifting Energy in the Sight.',v:1},
+  {t:'Energy therefore, in all its degrees, must be proven in Time to be a Prediction of the Same Energy as observed in Space. For what IS Good in Time brings forth that which MAKES it Good in Space.',v:4},
+  {t:'The Sight is unforgivably dividing the Opposition between Shape and Form within the Finite Object making it an Infinite Object, whilst Eternally uniting that Opposition, making it a Finite Object. Even unto itself, The Sight remains Opposed Within and United without.',v:1},
+  {t:'The Seer therefore is the finite, reasonable and measurable Infinite Manifestation of the Knowledge of the Sight and Sole Custodian of its Hidden Wisdom for Eternity. For it is true, what One gives in Knowledge in Space is received in Wisdom and surely in Time.',v:5},
+  {t:'Time IS and Knowledge causes you to Do. It takes Time to Know for once it is Known, Actions follow Passions. Everything is collected in Space while Nothing is Created in Time, merely Motion of Time and TransFormation into Shape.',v:2},
+  {t:'The Space, the Shape or the manifested Object Without the Sight DOES Infinitely Expand while the Time, the Form and the Subject Within the Sight IS Ever Eternal. Time is all there IS and Space is all it Does.',v:2},
+  {t:'Every observable Object then, Is TWO folds, One part Manifested in Space as the Shape of the Object and One part Non-Manifested or Abstracted in Time as the Form of the Object. One part ACTION, subject to Expansion of Space and One part PASSION, subject to Motion of Time. Neither part creates the other for they are both Simultaneously, Orderly and Infinitely Created.',v:3},
+  {t:'Suffice to say that Space and Time are opposed in Nature but are similar in Essence, for they complete each other on the Higher apprehension of the Sight, the same way a Physical Object is different in Nature to its Non-Physical Idea but possesses the same Essence as the Idea it conveys.',v:2},
+  {t:'When Space IS, it contains the Motion of Time, but when Space DOES, it is contained within The Motion of Time. Given the Idea of Time being Eternal and Ever Moving, there is not a Time-out but rather an everlasting Continuum Counter-acted by an Infinite Expansion of Space.',v:2},
+  {t:'The medium through which the Idea of an Object translates into the Manifestation of that Object is the Office of the Sight. The Motion of Time on one side of the Object causes the Expansion or Collection of Space on the other side. It forces all Actions and Reactions to gravitate towards the Manifestation of the Idea.',v:7},
+  {t:'This Gravitational Force witnessed in Space, Causes the Motion of Expansion which is Caused by the Motion of Time. It is the Energy of the Sight, the Nature of the Shape in Space and the Idea of the Form in Time. The Will of the Sight, the Proof of that which has undergone Formation and the Hope of that which is yet to Manifest.',v:4},
+  {t:'The Sight being the Cause of the Energy, it has the Authority and Power to Create any Form and translate that Form into its Shape. Being the Cause and Effects of its Desire, it is Subject unto the Object of its Will. The Sight Being, it Wills to BE and Willing to Be, it Does its MAKING.',v:1},
+  {t:'The Sight IS and HAS because of itself: Two States of Nature. Its Shaping State because of its Matter State in Space and its Forming State because of its Motion State in Time. It must transform out of Itself into Itself, and thus it is marked by Growth alone.',v:3},
+  {t:'Conscious Growth in its One State causes the Sight to turn itself into all the Natures of that State, evolving into all the different Finite and Temporary or Mortal Shapes that State is predetermined to Be, whilst Growing into both its States causes it to remain locked in its Cycles of Growth, thus exhibiting its Immortal Nature.',v:5},
+  {t:'For this reason, the Temporary Day follows the Temporary Night to reincarnate back into the Day evolving into the Night. Days and Nights are Forever Immortal Cycles locked into the Idea of Time in this Space we call Isi.',v:2},
+  {t:'This Dual Nature of the Sight is Bonded by The Energy permeating Within and Without it. This Bonding Energy, so far Inexplicable in Composition, is a kind of Light. One I can attest without any Fear of oppression, Makes the Seer in the person that I AM.',v:6},
+  {t:'This Dual Nature of the Sight, this must be Father-Mother-Taken-Given Energy permeating and permeated throughout Nature is All there IS and All that Does. Every Activity and Every Passion IS and COMES from it. For when the Body is Active, the Mind is Passive and when the Body is Passive, the Mind is Active. As it Takes, the Other Gives and as One Gives, the Other Takes to give again. Perception.',v:5},
+  {t:'Our Physical Senses are thus connected to their opposites, the Imaginary Senses. Some interacting with the Shape of the Object in Space, while others, interacting with their Forms or Images of their Ideas in Time. Some Infinitely Expanding in the Physical Universe, while others, Eternally Moving in the corresponding Imaginary Universe.',v:1},
+  {t:'The Intention of this treatise is to give you my most trusted Student, Scholar of Truth and dearest Friend, an account of the Laws which govern Creation so that even you may also Create and Recreate yourself evermore in the Idea of that which you desire to see Manifested.',v:7},
+  {t:'Take heed then to the voice of Wisdom and Know how to use the Sight to your own advantage so that even You may also be a Fruit not just unto yourself bearing your own seeds of formations, but also a Forest unto those who through you and like You, also seek the Source of the Good and Worthy Life.',v:5},
+  {t:'No Thing, Object or Entity in Creation is an act of randomness to the Sight of the Seer, for No Thing may exist without the permission or circumstances of its preconceived Idea and Formation. The law that governs Creation transcends even the Sight itself and recognizes all Cycles from Formation till Manifestation, turning Sight into Sight, Cycle into Cycle, Consciousness into New Consciousness, Forever into Evermore.',v:7},
+  {t:'Just like our conscious Bodies begin as Ideas of ourselves in the Imagination, they are marked by growth alone in life. Their entirety, meaning from Conception of the Idea to the Manifestation of the Body, they are like a Seed which has the potential of turning into a Forest.',v:5},
+  {t:'The Laws of the Sight are given and ever changing by virtue of growth, as the Forms of your Ideas are Seeds which will later grow into the Manifested Forest of your desired goal.',v:7},
+  {t:'All that the Seed Is, All that it Was and All that it will ever Be is the Potential to be a Forest in the Sight of the Seer who desires it to Be so until it is so. Only by apprehension and comprehension of the Laws governing Cause and Effects do you Grow into the desired Effects of your own Causation.',v:5},
+  {t:'Knowledge alone is the One Object filled with all the Subjects of Wisdom. Neither Space nor Time holds the Sight hostage but through it, do they apprehend themselves as Infinity and Eternity. The Object of the Sight is its Purpose and Intention extended to it by its Maker.',v:4},
+  {t:'When the Sight becomes Conscious of its Existence, then Does it Live or Express Life. Consciousness therefore IS Awareness of Growth. Its beginning it calls Birth and its ending it calls Death. Alive only through Awareness of its Becoming and Dead only through Ignorance of its Becoming.',v:5},
+  {t:'The Power of Creation never leaves you when you are Aware of it but forever Hides away from you when Ignorant of it. For this reason I ask you to Know in Order to See. Do not let Knowledge depart from your Sight, for that is the beginning of Ignorance and surely a Form of death.',v:1},
+  {t:'Matter in Space Gravitates around its own center or rather Accumulates against that which has no Matter, its counter-space, and is always subject to the Cycle of its becoming. You are in control of the Appearing should YOU be in control of the Sight. The Sight is the One, the All.',v:7},
+  {t:'The Seer\'s foremost labor is to Perfect the Sight and Be perfected by it, through it and in it alone. Armed with Nothing else other than Knowledge, exposed and discovered as Wisdom in Everything. The Seer Sees the Sight in Everything and is Seen as the Sight by Everything. Growth in the Sight alone WAS, IS and ever will BE the Goal in the Sight of the Seer.',v:5},
+]},
+{title:'Chapter II: Courage of the Making',deco:'The Reel Nature of The Sight',paras:[
+  {t:'At this point, having scrutinized and observed carefully all that I have occulted in Wisdom, I need to make a clear distinction between the World of Things as you now See it, and the World of Truths, as I now hope you are to See it. Truth alone Matters in the Object.',v:1},
+  {t:'By this definition, the Object in Space is not the Real Object but rather what IS hidden within it, has substance and therefore EXISTS. IT Being TIME, is the Subject within the Object Manifested in Space, for only Time can exist in Space. Space is its container.',v:2},
+  {t:'While all the Makings are polarized towards Space, all the Beings are Polarized towards Time. An Object IS therefore its own Object only when it is Truth contained in Space, and this Truth Makes the Object a Fact of Matter in that Space.',v:3},
+  {t:'Remove this Truth from the Object and there IS no Idea found within it. That which does not Exist in the realm of Truths only Exists in the realm of Lies. The Sight is aware of these Lies should the Sight be aware of these Truths.',v:1},
+  {t:'Reality is the totality of Truths in Existence, and Truth is the only Certainty of Fact. Being Certain of itself, Does it make up Reality as a Real, True and Factual World in which to Exist. Should your Sight See Truth in the World, and see itself as Truth, then it Exists in Truth.',v:7},
+  {t:'This reminds me of the Cat that Existed and did not Exist simultaneously until it either Existed or did not Exist. This is only possible in a Construct. The moment Certainty begot Certainty, then and only then Did it Exist. This is why Certainty of Truth is Certainty of Existence.',v:3},
+  {t:'For the benefit of this Law, the Seer\'s Sight Becomes that which it Wills and Wills to Become that which it IS. Being a Fact, the Sight can become part of a Fact without losing its ability to be a Fact. In this sense, the Sight in the Seer is a Fact of Nature and also part of all the Facts of Nature.',v:5},
+  {t:'Now my question to you, my brave and fearless Seer is this: Are you the Object of your Being or the Possibilities of your Becoming? Define the Sight into that which you Will and through Knowledge and Awareness, soon your Idea Will Manifest.',v:5},
+  {t:'As an Idea, the Sight is compelled to Manifest. And as a Manifestation, it is compelled to Reason and labor together with the Laws governing Creation. Ideas governing Form, Manifestations governing Shape and Ratios governing Reason. The Sight is Reality in the sense where it holds separate what is Form from what is Shape.',v:1},
+  {t:'As the Sight Reasons and balances its Making to its Being and vice versa, it Thinks. And Thinking by default, proves that it possesses a Mind apt to generate Thoughts and Ideas rooted in Truth. The Divine Unifier and Ultimate Divider is the Sight.',v:5},
+  {t:'As for Creation in the Sight, the Idea is an Abstract reality, so far as it is not Physical but Substantial in Nature. The Form is Natural, so far as it is Physical and Unique to all species in Nature. The Shape is Rational, so far as it is the Sum of all the intended ratios as illuminated by the Sun.',v:3},
+  {t:'Given the Physical Space and the Abstract Time are present in each other, Matter can be affected Infinitely and Eternally through Chemical Mutation, preferably using Light as the base Manifestation, hence giving an Al or El or Light Chemical connotations to the Work of the Seer.',v:6},
+  {t:'As Time moves, Space expands for as the Soul is, Matter makes. For this reason, seasons change and yet seasonal cycles remain unchanged. The corporeal is permeated by the incorporeal out of necessity of the one and only Law which is Growth.',v:2},
+  {t:'Sound, as revealed in the Manifested Space is the immediate Effect of its Cause being sired to the rapid movement of its vibration. Should the Seer\'s ears vibrate at the same rate of vibration as the Sound, the sense of hearing is only then activated to passively discern all the incoming ratios of that motion as it expands in Space reversing the causation of Sight.',v:3},
+  {t:'Energy is a property of Nature. If you can Rationalize Nature, you would break her into an infinite expansion of the Appearing stretching from the Stars right through the innermost realms of the subtlest creatures on Isi. All uniting and self-embracing is the Mother of all Wisdom.',v:4},
+  {t:'Fire when she burns, Air when she breathes, Water when she thirsts and Earth when she feels. Thus is the Nature of the Mother. She is in the Self, she is in wisdom, and to my people she is known as Isi. Overseeing all, She is the Sight.',v:6},
+]},
+];
+
+/* BUILD READER */
+const rtp = document.getElementById('reader-text-pane');
+const allParas = [];
+function highlightText(text){
+  let h = text;
+  Object.keys(QT).sort((a,b)=>b.length-a.length).forEach(term=>{
+    const d=QT[term];
+    h=h.replace(new RegExp(`\\b(${term})\\b`,'g'),`<span class="qt ${d.color}" data-qt="${term}">$1</span>`);
+  });
+  return h;
+}
+CHAPTERS.forEach(ch=>{
+  const wrap=document.createElement('div');
+  const cht=document.createElement('div');
+  cht.className='reader-chapter-title';
+  cht.innerHTML=`<span class="ch-deco">${ch.deco}</span>${ch.title}`;
+  wrap.appendChild(cht);
+  ch.paras.forEach(p=>{
+    const el=document.createElement('div');
+    el.className='r-para';
+    el.dataset.v=p.v;
+    el.innerHTML=highlightText(p.t);
+    wrap.appendChild(el);
+    allParas.push(el);
+  });
+  rtp.appendChild(wrap);
+});
+
+/* READER INTERSECTION */
+let activePara=null;
+const readObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('vis'); if(e.intersectionRatio>0.35) setActive(e.target); }
+  });
+},{threshold:[0.1,0.35,0.7],rootMargin:'0px 0px -15% 0px'});
+document.querySelectorAll('.reader-chapter-title').forEach(el=>readObs.observe(el));
+allParas.forEach(p=>readObs.observe(p));
+function setActive(el){
+  if(activePara) activePara.classList.remove('active');
+  el.classList.add('active'); activePara=el;
+  const v=parseInt(el.dataset.v)||0, vc=VIZ[v];
+  document.getElementById('ann-concept').textContent=vc.concept;
+  document.getElementById('ann-formula').textContent=vc.formula;
+  document.getElementById('ann-desc').textContent=vc.desc;
+  const idx=allParas.indexOf(el), pct=((idx+1)/allParas.length)*100;
+  document.getElementById('read-prog-fill').style.width=pct+'%';
+  document.getElementById('orbital-prog').style.strokeDashoffset=125.7-(125.7*pct/100);
+}
+
+/* QUANTUM POPUP */
+const popup=document.getElementById('qt-popup');
+let popupOpen=false;
+function showPopup(term,x,y){
+  const d=QT[term]; if(!d) return;
+  document.getElementById('qp-label').textContent=d.label;
+  document.getElementById('qp-formula').textContent=d.formula;
+  document.getElementById('qp-desc').textContent=d.desc;
+  if(window.innerWidth>820){
+    popup.style.left=Math.min(x,window.innerWidth-300)+'px';
+    popup.style.top=(y+8)+'px';
+  }
+  popup.classList.add('show'); popupOpen=true;
+}
+function closePopup(){ popup.classList.remove('show'); popupOpen=false; }
+
+// Mouse hover
+document.addEventListener('mouseover',e=>{
+  const el=e.target.closest('.qt');
+  if(el&&el.dataset.qt){ showPopup(el.dataset.qt,e.clientX,e.clientY); }
+});
+document.addEventListener('mouseout',e=>{ if(!e.target.closest('.qt')) closePopup(); });
+
+// Touch tap on terms
+document.addEventListener('touchstart',e=>{
+  const el=e.target.closest('.qt');
+  if(el&&el.dataset.qt){ e.preventDefault(); const t=e.touches[0]; showPopup(el.dataset.qt,t.clientX,t.clientY); }
+  else if(popupOpen&&!e.target.closest('#qt-popup')) closePopup();
+},{passive:false});
+
+/* ══════════════════════════════════════
+   HERO CANVAS
+══════════════════════════════════════ */
+(function heroFn(){
+  const cv=document.getElementById('hero-canvas');
+  const cx=cv.getContext('2d');
+  let W,H,pts=[],t=0,mouse={x:-1,y:-1};
+  function resize(){ W=cv.width=innerWidth; H=cv.height=innerHeight;
+    const n=Math.floor(W*H/5500*PTSCALE);
+    pts=Array.from({length:Math.min(n,200)},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.3+.4,a:Math.random()*.5+.1,h:Math.random()<.5?'180':Math.random()<.5?'280':'45',ph:Math.random()*Math.PI*2}));
+  }
+  function bindMouse(){ cv.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;}); cv.addEventListener('mouseleave',()=>{mouse.x=-1;}); }
+  function bindTouch(){ cv.addEventListener('touchmove',e=>{if(e.touches[0]){mouse.x=e.touches[0].clientX;mouse.y=e.touches[0].clientY;}},{passive:true}); cv.addEventListener('touchend',()=>{mouse.x=-1;},{passive:true}); }
+  bindMouse(); bindTouch();
+  function draw(){
+    t+=.011; cx.fillStyle='rgba(3,2,15,.14)'; cx.fillRect(0,0,W,H);
+    // Connections
+    for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<85){ cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,229,255,${(1-d/85)*.1})`;cx.lineWidth=.4;cx.stroke(); }
+    }
+    pts.forEach(p=>{
+      p.ph+=.01;
+      if(mouse.x>0){ const dx=p.x-mouse.x,dy=p.y-mouse.y,d=Math.sqrt(dx*dx+dy*dy); if(d<100){p.x+=dx/d*1.5;p.y+=dy/d*1.5;} }
+      p.x+=p.vx+(Math.random()-.5)*.15; p.y+=p.vy+(Math.random()-.5)*.15;
+      if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+      cx.beginPath(); cx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      cx.fillStyle=`hsla(${p.h},100%,70%,${p.a*(.65+.35*Math.sin(p.ph))})`; cx.fill();
+    });
+    const cX=W/2,cY=H/2;
+    for(let rn=0;rn<3;rn++){ const rd=60+rn*48+10*Math.sin(t*.3+rn); cx.beginPath(); cx.arc(cX,cY,rd,0,Math.PI*2); cx.strokeStyle=`rgba(180,77,255,${(.06-rn*.012)*(.7+.3*Math.sin(t*.5+rn))})`; cx.lineWidth=1; cx.stroke(); }
+    for(let arm=0;arm<6;arm++){ const ang=(arm/6)*Math.PI*2+t*.07,len=90+15*Math.sin(t*.7+arm); cx.beginPath(); cx.moveTo(cX,cY); cx.lineTo(cX+Math.cos(ang)*len,cY+Math.sin(ang)*len); cx.strokeStyle=`rgba(0,229,255,${.06+.04*Math.sin(t+arm)})`; cx.lineWidth=.8; cx.stroke(); }
+    const g=cx.createRadialGradient(cX,cY,0,cX,cY,45); g.addColorStop(0,`rgba(255,255,255,${.08+.04*Math.sin(t*2)})`); g.addColorStop(1,'rgba(0,0,0,0)'); cx.beginPath(); cx.arc(cX,cY,45,0,Math.PI*2); cx.fillStyle=g; cx.fill();
+    requestAnimationFrame(draw);
+  }
+  addEventListener('resize',resize); resize(); draw();
+})();
+
+/* ══════════════════════════════════════
+   READER BG CANVAS
+══════════════════════════════════════ */
+let readerVizState=0;
+(function readerFn(){
+  const cv=document.getElementById('reader-canvas');
+  const cx=cv.getContext('2d');
+  let W,H,t=0,curr=0;
+  function resize(){ W=cv.width=cv.offsetWidth; H=cv.height=cv.offsetHeight||innerHeight; }
+  addEventListener('resize',resize); resize();
+  const orbits=Array.from({length:Math.floor(40*PTSCALE)},(_,i)=>({angle:(i/40)*Math.PI*2,r:25+Math.random()*110,spd:(Math.random()-.5)*.01,h:260+Math.floor(Math.random()*60),ph:Math.random()*Math.PI*2}));
+  function drawV(v,al){
+    const cX=W*.35,cY=H*.5;
+    if(v===0){ orbits.slice(0,Math.floor(orbits.length*.6)).forEach(o=>{o.angle+=o.spd;const x=cX+o.r*Math.cos(o.angle),y=cY+o.r*.65*Math.sin(o.angle);cx.beginPath();cx.arc(x,y,1.2,0,Math.PI*2);cx.fillStyle=`hsla(${o.h},90%,70%,${al*.18})`;cx.fill();}); }
+    else if(v===1){ for(let i=0;i<28;i++){const ang=(i/28)*Math.PI*2+t*.03,len=(90+55*Math.sin(t+i*.4))*al;const g=cx.createLinearGradient(cX,cY,cX+Math.cos(ang)*len,cY+Math.sin(ang)*len);g.addColorStop(0,`rgba(0,229,255,${al*.12})`);g.addColorStop(1,'rgba(0,0,0,0)');cx.beginPath();cx.moveTo(cX,cY);cx.lineTo(cX+Math.cos(ang)*len,cY+Math.sin(ang)*len);cx.strokeStyle=g;cx.lineWidth=1;cx.stroke();} }
+    else if(v===2){ for(let r=0;r<4;r++){const rd=(H*.3)*Math.abs(Math.sin(t*.5+r*.8));cx.beginPath();cx.arc(cX,cY,rd,0,Math.PI*2);cx.strokeStyle=`rgba(0,229,255,${al*Math.cos(t*.5+r*.8)*.05})`;cx.lineWidth=1;cx.stroke();} }
+    else if(v===3){ for(let w=0;w<3;w++){cx.beginPath();for(let x=0;x<W;x+=2){const y=H/2+(45-w*12)*Math.sin(x*.016+t*(1+w*.3)+w);x===0?cx.moveTo(x,y):cx.lineTo(x,y);}cx.strokeStyle=`hsla(${180+w*50},100%,70%,${al*.1})`;cx.lineWidth=1;cx.stroke();} }
+    else if(v===4){ const g=cx.createRadialGradient(cX,cY,0,cX,cY,70);g.addColorStop(0,`rgba(255,209,102,${al*.18})`);g.addColorStop(1,'rgba(0,0,0,0)');cx.beginPath();cx.arc(cX,cY,70,0,Math.PI*2);cx.fillStyle=g;cx.fill(); }
+    else if(v===5){ orbits.forEach(o=>{o.angle+=o.spd*.5;const x=cX+o.r*Math.cos(o.angle),y=cY+o.r*.65*Math.sin(o.angle);cx.beginPath();cx.arc(x,y,1,0,Math.PI*2);cx.fillStyle=`hsla(${o.h},90%,70%,${al*.15})`;cx.fill();}); }
+    else if(v===6){ for(let i=0;i<40;i++){const ang=(i/40)*Math.PI*2+t*.03,len=(80+50*Math.sin(t*1.8+i*.4))*al;const hue=(i/40*360+t*15)%360;const g=cx.createLinearGradient(cX,cY,cX+Math.cos(ang)*len,cY+Math.sin(ang)*len);g.addColorStop(0,`hsla(${hue},100%,90%,${al*.1})`);g.addColorStop(1,'rgba(0,0,0,0)');cx.beginPath();cx.moveTo(cX,cY);cx.lineTo(cX+Math.cos(ang)*len,cY+Math.sin(ang)*len);cx.strokeStyle=g;cx.lineWidth=1;cx.stroke();} }
+    else if(v===7){ const r=Math.min(W,H)*.18;cx.save();cx.translate(cX,cY);cx.rotate(t*.025);for(let s=4;s<=6;s++){cx.beginPath();for(let i=0;i<s;i++){const a=(i/s)*Math.PI*2;i===0?cx.moveTo(r*Math.cos(a),r*Math.sin(a)):cx.lineTo(r*Math.cos(a),r*Math.sin(a));}cx.closePath();cx.strokeStyle=`rgba(0,229,255,${al*(.1-s*.012)})`;cx.lineWidth=1;cx.stroke();}cx.restore(); }
+    const g2=cx.createRadialGradient(cX,cY,0,cX,cY,28);g2.addColorStop(0,`rgba(255,255,255,${al*.12})`);g2.addColorStop(1,'rgba(0,0,0,0)');cx.beginPath();cx.arc(cX,cY,28,0,Math.PI*2);cx.fillStyle=g2;cx.fill();
+  }
+  function draw(){
+    t+=.01; curr+=(readerVizState-curr)*.04;
+    cx.fillStyle='rgba(3,2,15,.22)'; cx.fillRect(0,0,W,H);
+    const lo=Math.floor(curr)%8, hi=(lo+1)%8, bl=curr-Math.floor(curr);
+    drawV(lo,1-bl*.5); if(bl>0.05) drawV(hi,bl*.75);
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══════════════════════════════════════
+   AWAKENING CANVAS
+══════════════════════════════════════ */
+(function awFn(){
+  const cv=document.getElementById('awakening-canvas');
+  const cx=cv.getContext('2d');
+  let W,H,t=0,mouse={x:-1,y:-1},clicking=false;
+  function resize(){ W=cv.width=cv.offsetWidth; H=cv.height=cv.offsetHeight; }
+  addEventListener('resize',resize); resize();
+  const n=Math.floor(60*PTSCALE);
+  const orbs=Array.from({length:n},(_,i)=>({angle:(i/n)*Math.PI*2,r:20+Math.random()*120,spd:(Math.random()-.5)*.016,sz:Math.random()*2.8+.8,al:Math.random()*.6+.2,h:255+Math.floor(Math.random()*60),ph:Math.random()*Math.PI*2,ox:0,oy:0}));
+  function setMouse(x,y){ mouse.x=x; mouse.y=y; }
+  cv.addEventListener('mousemove',e=>{ const rc=cv.getBoundingClientRect(); setMouse(e.clientX-rc.left,e.clientY-rc.top); });
+  cv.addEventListener('mouseleave',()=>{ mouse.x=-1; });
+  cv.addEventListener('mousedown',()=>{ clicking=true; setTimeout(()=>clicking=false,600); });
+  cv.addEventListener('touchmove',e=>{ e.preventDefault(); const p=getTouch(e,cv); setMouse(p.x,p.y); },{passive:false});
+  cv.addEventListener('touchend',e=>{ mouse.x=-1; if(e.changedTouches.length){ clicking=true; setTimeout(()=>clicking=false,600); } },{passive:true});
+  function draw(){
+    t+=.013; cx.fillStyle='rgba(3,2,15,.2)'; cx.fillRect(0,0,W,H);
+    for(let i=0;i<W;i+=38){ cx.beginPath();cx.moveTo(i,0);cx.lineTo(i,H);cx.strokeStyle='rgba(0,229,255,.02)';cx.lineWidth=.4;cx.stroke(); }
+    for(let j=0;j<H;j+=38){ cx.beginPath();cx.moveTo(0,j);cx.lineTo(W,j);cx.strokeStyle='rgba(0,229,255,.02)';cx.lineWidth=.4;cx.stroke(); }
+    cx.beginPath(); for(let x=0;x<W;x+=2){ const y=H/2+50*Math.sin(x*.024+t)*Math.exp(-((x-W/2)**2)/(W*W*.08))+19*Math.sin(x*.057-t*1.4)+10*Math.sin(x*.1+t*.7); x===0?cx.moveTo(x,y):cx.lineTo(x,y); } cx.strokeStyle='rgba(0,229,255,.28)'; cx.lineWidth=1.3; cx.stroke();
+    cx.beginPath(); for(let x=0;x<W;x+=2){ const en=Math.exp(-((x-W*.62)**2)/(W*W*.013)); const y=H*.64+30*Math.sin(x*.04+t*1.2)*en; x===0?cx.moveTo(x,y):cx.lineTo(x,y); } cx.strokeStyle='rgba(180,77,255,.2)'; cx.lineWidth=.8; cx.stroke();
+    const cX=W/2,cY=H/2;
+    orbs.forEach(o=>{
+      o.angle+=o.spd;
+      const wave=1+.24*Math.sin(t*2+o.ph);
+      let bx=cX+o.r*wave*Math.cos(o.angle), by=cY+o.r*.62*wave*Math.sin(o.angle);
+      if(mouse.x>0){ const dx=mouse.x-bx,dy=mouse.y-by,d=Math.sqrt(dx*dx+dy*dy); const f=clicking?Math.min(180/d,7):Math.min(70/d,2.5); o.ox=o.ox*.85+(dx/d)*f*.028; o.oy=o.oy*.85+(dy/d)*f*.028; } else { o.ox*=.92; o.oy*=.92; }
+      bx+=o.ox*10; by+=o.oy*10;
+      cx.beginPath(); cx.arc(bx,by,o.sz,0,Math.PI*2); cx.fillStyle=`hsla(${o.h},100%,70%,${o.al*(.38+.62*Math.abs(Math.sin(t+o.ph)))})`; cx.fill();
+    });
+    if(mouse.x>0){ const g=cx.createRadialGradient(mouse.x,mouse.y,0,mouse.x,mouse.y,clicking?70:35); g.addColorStop(0,`rgba(0,229,255,${clicking?.15:.05})`); g.addColorStop(1,'rgba(0,0,0,0)'); cx.beginPath(); cx.arc(mouse.x,mouse.y,clicking?70:35,0,Math.PI*2); cx.fillStyle=g; cx.fill(); }
+    const ng=cx.createRadialGradient(cX,cY,0,cX,cY,38); ng.addColorStop(0,`rgba(255,255,255,${.5+.2*Math.sin(t*3)})`); ng.addColorStop(.4,'rgba(180,77,255,.25)'); ng.addColorStop(1,'rgba(0,0,0,0)'); cx.beginPath(); cx.arc(cX,cY,38,0,Math.PI*2); cx.fillStyle=ng; cx.fill();
+    cx.font=`10px Share Tech Mono`; cx.fillStyle='rgba(180,77,255,.4)'; cx.textAlign='center'; cx.fillText('|psi>',cX,cY+4);
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══════════════════════════════════════
+   BLUEPRINT CANVAS
+══════════════════════════════════════ */
+(function bpFn(){
+  const cv=document.getElementById('blueprint-canvas');
+  const cx=cv.getContext('2d');
+  let W,H,t=0,mouse={x:-1,y:-1},mRot=0,uBeams=[];
+  function resize(){ W=cv.width=cv.offsetWidth; H=cv.height=cv.offsetHeight; }
+  addEventListener('resize',resize); resize();
+  const tr=Array.from({length:8},()=>({x1:Math.random()*.8+.1,y1:Math.random()*.8+.1,x2:Math.random()*.8+.1,y2:Math.random()*.8+.1,p:Math.random(),spd:.004+Math.random()*.003,h:Math.random()<.5?180:45}));
+  function setMouse(x,y){ mouse.x=x; mouse.y=y; mRot+=.04; }
+  function addBeam(x,y){ uBeams.push({x1:W/2,y1:H/2,x2:x,y2:y,life:1,h:Math.random()<.5?180:45}); if(uBeams.length>10)uBeams.shift(); }
+  cv.addEventListener('mousemove',e=>{ const rc=cv.getBoundingClientRect(); setMouse(e.clientX-rc.left,e.clientY-rc.top); });
+  cv.addEventListener('mouseleave',()=>{ mouse.x=-1; });
+  cv.addEventListener('click',e=>{ const rc=cv.getBoundingClientRect(); addBeam(e.clientX-rc.left,e.clientY-rc.top); });
+  cv.addEventListener('touchmove',e=>{ e.preventDefault(); const p=getTouch(e,cv); setMouse(p.x,p.y); },{passive:false});
+  cv.addEventListener('touchend',e=>{ mouse.x=-1; const p=getTouch(e,cv); addBeam(p.x,p.y); },{passive:true});
+  function draw(){
+    t+=.011; cx.fillStyle='rgba(3,2,15,.25)'; cx.fillRect(0,0,W,H);
+    for(let x=0;x<W;x+=46){ cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,H);cx.strokeStyle='rgba(0,229,255,.032)';cx.lineWidth=.4;cx.stroke(); }
+    for(let y=0;y<H;y+=46){ cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.strokeStyle='rgba(0,229,255,.032)';cx.lineWidth=.4;cx.stroke(); }
+    const cX=W/2,cY=H/2,r=Math.min(W,H)*.26;
+    cx.save(); cx.translate(cX,cY); cx.rotate(t*.04+mRot*.01);
+    cx.beginPath(); for(let i=0;i<6;i++){ const a=(i/6)*Math.PI*2-Math.PI/6; i===0?cx.moveTo(r*Math.cos(a),r*Math.sin(a)):cx.lineTo(r*Math.cos(a),r*Math.sin(a)); } cx.closePath(); cx.strokeStyle=`rgba(0,229,255,${.09+.04*Math.sin(t)})`; cx.lineWidth=1; cx.stroke();
+    cx.rotate(t*.08); cx.beginPath(); for(let i=0;i<3;i++){ const a=(i/3)*Math.PI*2; i===0?cx.moveTo(r*.82*Math.cos(a),r*.82*Math.sin(a)):cx.lineTo(r*.82*Math.cos(a),r*.82*Math.sin(a)); } cx.closePath(); cx.strokeStyle=`rgba(255,209,102,${.08+.04*Math.sin(t*1.3)})`; cx.lineWidth=1; cx.stroke();
+    cx.rotate(-t*.06); cx.beginPath(); for(let i=0;i<3;i++){ const a=(i/3)*Math.PI*2+Math.PI/3; i===0?cx.moveTo(r*.82*Math.cos(a),r*.82*Math.sin(a)):cx.lineTo(r*.82*Math.cos(a),r*.82*Math.sin(a)); } cx.closePath(); cx.strokeStyle=`rgba(180,77,255,${.08+.04*Math.sin(t*.9)})`; cx.lineWidth=1; cx.stroke();
+    cx.restore();
+    tr.forEach(b=>{ b.p=(b.p+b.spd)%1; const x1=b.x1*W,y1=b.y1*H,x2=b.x2*W,y2=b.y2*H,px=x1+(x2-x1)*b.p,py=y1+(y2-y1)*b.p; cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(x2,y2);cx.strokeStyle=`hsla(${b.h},100%,70%,.05)`;cx.lineWidth=.7;cx.stroke(); const g=cx.createRadialGradient(px,py,0,px,py,5);g.addColorStop(0,`hsla(${b.h},100%,80%,.75)`);g.addColorStop(1,'rgba(0,0,0,0)');cx.beginPath();cx.arc(px,py,5,0,Math.PI*2);cx.fillStyle=g;cx.fill(); });
+    uBeams.forEach(b=>{ b.life*=.97; cx.beginPath();cx.moveTo(b.x1,b.y1);cx.lineTo(b.x2,b.y2);cx.strokeStyle=`hsla(${b.h},100%,70%,${b.life*.5})`;cx.lineWidth=1.1;cx.stroke(); const g=cx.createRadialGradient(b.x2,b.y2,0,b.x2,b.y2,7);g.addColorStop(0,`hsla(${b.h},100%,80%,${b.life*.65})`);g.addColorStop(1,'rgba(0,0,0,0)');cx.beginPath();cx.arc(b.x2,b.y2,7,0,Math.PI*2);cx.fillStyle=g;cx.fill(); });
+    uBeams=uBeams.filter(b=>b.life>0.02);
+    if(mouse.x>0){ cx.beginPath();cx.moveTo(W/2,H/2);cx.lineTo(mouse.x,mouse.y);cx.setLineDash([3,5]);cx.strokeStyle='rgba(0,229,255,.22)';cx.lineWidth=.8;cx.stroke();cx.setLineDash([]); cx.beginPath();cx.arc(mouse.x,mouse.y,3.5,0,Math.PI*2);cx.fillStyle='rgba(0,229,255,.45)';cx.fill(); }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══════════════════════════════════════
+   LIGHT CANVAS
+══════════════════════════════════════ */
+(function lightFn(){
+  const cv=document.getElementById('light-canvas');
+  const cx=cv.getContext('2d');
+  let W,H,t=0,mouse={x:-1,y:-1},bursts=[];
+  function resize(){ W=cv.width=cv.offsetWidth; H=cv.height=cv.offsetHeight; }
+  addEventListener('resize',resize); resize();
+  function setMouse(x,y){ mouse.x=x; mouse.y=y; }
+  function addBurst(x,y){ bursts.push({x,y,r:0,life:1}); }
+  cv.addEventListener('mousemove',e=>{ const rc=cv.getBoundingClientRect(); setMouse(e.clientX-rc.left,e.clientY-rc.top); });
+  cv.addEventListener('mouseleave',()=>{ mouse.x=-1; });
+  cv.addEventListener('click',e=>{ const rc=cv.getBoundingClientRect(); addBurst(e.clientX-rc.left,e.clientY-rc.top); });
+  cv.addEventListener('touchmove',e=>{ e.preventDefault(); const p=getTouch(e,cv); setMouse(p.x,p.y); },{passive:false});
+  cv.addEventListener('touchend',e=>{ mouse.x=-1; const p=getTouch(e,cv); addBurst(p.x,p.y); },{passive:true});
+  const rayCount=isMobile?44:64;
+  function draw(){
+    t+=.012; cx.fillStyle='rgba(3,2,15,.16)'; cx.fillRect(0,0,W,H);
+    const sg=cx.createLinearGradient(W*.08,0,W*.92,0); ['#ff0000','#ff7700','#ffff00','#00ff00','#0000ff','#8b00ff'].forEach((c,i,a)=>sg.addColorStop(i/(a.length-1),c));
+    cx.save(); cx.globalAlpha=.09; cx.fillStyle=sg; cx.fillRect(W*.08,10,W*.84,5); cx.restore();
+    const srcX=mouse.x>0?mouse.x:W*.28, srcY=mouse.y>0?mouse.y:H/2;
+    for(let i=0;i<rayCount;i++){ const ang=(i/rayCount)*Math.PI*2+t*.03, len=(110+60*Math.sin(t*2+i*.5))*(.5+.5*Math.sin(t+i*.28)); const hue=(i/rayCount*360+t*18)%360; const g=cx.createLinearGradient(srcX,srcY,srcX+Math.cos(ang)*len,srcY+Math.sin(ang)*len); g.addColorStop(0,`hsla(${hue},100%,90%,${.09+.04*Math.sin(t+i*.2)})`); g.addColorStop(1,'rgba(0,0,0,0)'); cx.beginPath(); cx.moveTo(srcX,srcY); cx.lineTo(srcX+Math.cos(ang)*len,srcY+Math.sin(ang)*len); cx.strokeStyle=g; cx.lineWidth=1.3; cx.stroke(); }
+    const sg2=cx.createRadialGradient(srcX,srcY,0,srcX,srcY,65); sg2.addColorStop(0,`rgba(255,255,255,${.65+.2*Math.sin(t*3)})`); sg2.addColorStop(.2,'rgba(255,220,100,.3)'); sg2.addColorStop(1,'rgba(0,0,0,0)'); cx.beginPath(); cx.arc(srcX,srcY,65,0,Math.PI*2); cx.fillStyle=sg2; cx.fill();
+    for(let row=0;row<2;row++){ const sy=H*(.28+row*.44); for(let d=0;d<W*.45;d+=isMobile?5:3){ const in2=Math.pow(Math.cos((d+t*5)*.14),2); const hue=(180+d*.55)%360; cx.beginPath(); cx.arc(W*.52+d,sy+20*Math.sin(d*.1+t),1.3,0,Math.PI*2); cx.fillStyle=`hsla(${hue},100%,70%,${in2*.28})`; cx.fill(); } }
+    bursts.forEach(b=>{ b.r+=5; b.life*=.9; for(let ring=0;ring<3;ring++){ cx.beginPath(); cx.arc(b.x,b.y,b.r*(ring+1)*.4,0,Math.PI*2); cx.strokeStyle=`hsla(${ring*60+t*30},100%,80%,${b.life*(3-ring)*.1})`; cx.lineWidth=1.3; cx.stroke(); } });
+    bursts=bursts.filter(b=>b.life>0.02);
+    if(mouse.x>0){ cx.beginPath(); cx.moveTo(mouse.x-10,mouse.y); cx.lineTo(mouse.x+10,mouse.y); cx.moveTo(mouse.x,mouse.y-10); cx.lineTo(mouse.x,mouse.y+10); cx.strokeStyle='rgba(255,209,102,.3)'; cx.lineWidth=.8; cx.stroke(); }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══════════════════════════════════════
+   STORY CANVAS
+══════════════════════════════════════ */
+(function storyFn(){
+  const cv=document.getElementById('story-canvas');
+  const cx=cv.getContext('2d');
+  let W,H,t=0,mouse={x:-1,y:-1},clicking=false,starsOnce=false,starField=[];
+  function resize(){ W=cv.width=cv.offsetWidth; H=cv.height=cv.offsetHeight; starsOnce=false; }
+  addEventListener('resize',resize); resize();
+  const GLYPHS=['psi','inf','phi','Omega','alpha','nabla','delta','sigma'];
+  const n=Math.floor(14*PTSCALE);
+  const fGs=Array.from({length:Math.floor(14*PTSCALE)},()=>({x:Math.random()*.9+.05,y:Math.random()*.9+.05,vx:(Math.random()-.5)*.18,vy:(Math.random()-.5)*.18,g:GLYPHS[Math.floor(Math.random()*GLYPHS.length)],al:Math.random()*.18+.04,sz:Math.floor(Math.random()*11)+9,ph:Math.random()*Math.PI*2,h:Math.random()<.5?180:Math.random()<.5?280:45,ox:0,oy:0}));
+  const trails=Array.from({length:Math.floor(12*PTSCALE)},()=>rstTr({}));
+  function rstTr(o){ o.x=Math.random(); o.y=Math.random(); o.vx=(Math.random()-.5)*.018; o.vy=(Math.random()-.5)*.018; o.life=0; o.maxL=65+Math.random()*95; o.h=Math.random()<.4?180:Math.random()<.5?280:45; o.hist=[]; return o; }
+  function setMouse(x,y){ mouse.x=x/W; mouse.y=y/H; }
+  cv.addEventListener('mousemove',e=>{ const rc=cv.getBoundingClientRect(); setMouse(e.clientX-rc.left,e.clientY-rc.top); });
+  cv.addEventListener('mouseleave',()=>{ mouse.x=-1; });
+  cv.addEventListener('mousedown',()=>{ clicking=true; setTimeout(()=>clicking=false,500); });
+  cv.addEventListener('touchmove',e=>{ e.preventDefault(); const p=getTouch(e,cv); setMouse(p.x,p.y); },{passive:false});
+  cv.addEventListener('touchend',e=>{ mouse.x=-1; clicking=true; setTimeout(()=>clicking=false,500); },{passive:true});
+  function draw(){
+    t+=.012; cx.fillStyle='rgba(3,2,15,.17)'; cx.fillRect(0,0,W,H);
+    if(!starsOnce){ for(let i=0;i<Math.floor(280*PTSCALE);i++) starField.push({x:Math.random(),y:Math.random(),r:Math.random()*.65,a:Math.random()*.22}); starsOnce=true; }
+    starField.forEach(s=>{ cx.beginPath(); cx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2); cx.fillStyle=`rgba(232,232,248,${s.a})`; cx.fill(); });
+    const cX=W*.62,cY=H*.42;
+    for(let r=0;r<5;r++){ const rd=30+r*26+6*Math.sin(t*.5+r); cx.beginPath(); cx.arc(cX,cY,rd,0,Math.PI*2); cx.strokeStyle=`rgba(255,209,102,${.04-r*.006})`; cx.lineWidth=.7; cx.stroke(); }
+    const ng=cx.createRadialGradient(cX,cY,0,cX,cY,22); ng.addColorStop(0,`rgba(255,209,102,${.2+.08*Math.sin(t*2)})`); ng.addColorStop(1,'rgba(0,0,0,0)'); cx.beginPath(); cx.arc(cX,cY,22,0,Math.PI*2); cx.fillStyle=ng; cx.fill();
+    trails.forEach(tr=>{
+      tr.life++; if(tr.life>tr.maxL) rstTr(tr);
+      if(mouse.x>0){ const dx=mouse.x-tr.x,dy=mouse.y-tr.y,d=Math.sqrt(dx*dx+dy*dy); if(d<.35){ const f=clicking?.07:.022; tr.vx+=dx*f; tr.vy+=dy*f; tr.vx*=.88; tr.vy*=.88; } }
+      tr.hist.push({x:tr.x*W,y:tr.y*H}); if(tr.hist.length>20) tr.hist.shift();
+      tr.x+=tr.vx; tr.y+=tr.vy;
+      if(tr.x<0||tr.x>1||tr.y<0||tr.y>1) rstTr(tr);
+      if(tr.hist.length>1){ cx.beginPath(); cx.moveTo(tr.hist[0].x,tr.hist[0].y); tr.hist.forEach(p=>cx.lineTo(p.x,p.y)); const pr=tr.life/tr.maxL; cx.strokeStyle=`hsla(${tr.h},100%,70%,${Math.sin(pr*Math.PI)*.36})`; cx.lineWidth=1.1; cx.stroke(); }
+      const g=cx.createRadialGradient(tr.x*W,tr.y*H,0,tr.x*W,tr.y*H,4); g.addColorStop(0,`hsla(${tr.h},100%,90%,.75)`); g.addColorStop(1,'rgba(0,0,0,0)'); cx.beginPath(); cx.arc(tr.x*W,tr.y*H,4,0,Math.PI*2); cx.fillStyle=g; cx.fill();
+    });
+    fGs.forEach(g=>{ if(mouse.x>0){ const dx=mouse.x-g.x,dy=mouse.y-g.y,d=Math.sqrt(dx*dx+dy*dy); if(d<.28){ g.ox=g.ox*.82+dx*.02; g.oy=g.oy*.82+dy*.02; } else { g.ox*=.9; g.oy*=.9; } } else { g.ox*=.94; g.oy*=.94; } g.x+=(g.vx+g.ox)*.014; g.y+=(g.vy+g.oy)*.014; g.ph+=.008; if(g.x<0)g.x=1; if(g.x>1)g.x=0; if(g.y<0)g.y=1; if(g.y>1)g.y=0; cx.font=`${g.sz}px Share Tech Mono`; cx.fillStyle=`hsla(${g.h},75%,70%,${g.al*(.5+.5*Math.sin(g.ph))})`; cx.fillText(g.g,g.x*W,g.y*H); });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══════════════════════════════════════
+   CONVERGENCE CANVAS
+══════════════════════════════════════ */
+(function convFn(){
+  const cv=document.getElementById('conv-canvas');
+  const cx=cv.getContext('2d');
+  let W,H,t=0,mouse={x:-1,y:-1},shocks=[];
+  function resize(){ W=cv.width=cv.offsetWidth; H=cv.height=cv.offsetHeight; }
+  addEventListener('resize',resize); resize();
+  function setMouse(x,y){ mouse.x=x; mouse.y=y; }
+  function addShock(x,y){ shocks.push({x,y,r:0,life:1}); }
+  cv.addEventListener('mousemove',e=>{ const rc=cv.getBoundingClientRect(); setMouse(e.clientX-rc.left,e.clientY-rc.top); });
+  cv.addEventListener('mouseleave',()=>{ mouse.x=-1; });
+  cv.addEventListener('click',e=>{ const rc=cv.getBoundingClientRect(); addShock(e.clientX-rc.left,e.clientY-rc.top); });
+  cv.addEventListener('touchmove',e=>{ e.preventDefault(); const p=getTouch(e,cv); setMouse(p.x,p.y); },{passive:false});
+  cv.addEventListener('touchend',e=>{ mouse.x=-1; const p=getTouch(e,cv); addShock(p.x,p.y); },{passive:true});
+  const armCount=isMobile?3:4;
+  function draw(){
+    t+=.011; cx.fillStyle='rgba(3,2,15,.12)'; cx.fillRect(0,0,W,H);
+    const cX=mouse.x>0?W/2+(mouse.x-W/2)*.22:W/2;
+    const cY=mouse.y>0?H/2+(mouse.y-H/2)*.22:H/2;
+    for(let arm=0;arm<armCount;arm++){ cx.beginPath(); for(let s=0;s<160;s++){ const ang=(arm/armCount)*Math.PI*2+s*.07+t*.07,r=s*1.2; const x=cX+r*Math.cos(ang),y=cY+r*Math.sin(ang)*.55; s===0?cx.moveTo(x,y):cx.lineTo(x,y); } cx.strokeStyle=`hsla(${arm*90},100%,70%,.09)`; cx.lineWidth=1.2; cx.stroke(); }
+    for(let i=0;i<24;i++){ const ang=(i/24)*Math.PI*2,dist=240+70*Math.sin(t*.28+i*.4); const sx=cX+Math.cos(ang)*dist,sy=cY+Math.sin(ang)*dist; const prog=(Math.sin(t*.75+i*.28)+1)/2; const ex=cX+(sx-cX)*prog,ey=cY+(sy-cY)*prog; const hue=(ang/Math.PI*180+t*25)%360; const g=cx.createLinearGradient(sx,sy,cX,cY); g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1-prog,`hsla(${hue},100%,70%,.2)`); g.addColorStop(1,'rgba(0,0,0,0)'); cx.beginPath(); cx.moveTo(sx,sy); cx.lineTo(ex,ey); cx.strokeStyle=g; cx.lineWidth=1; cx.stroke(); }
+    [[180,175,.065],[280,120,.055],[45,85,.045],[0,48,.1]].forEach(([hue,r,a])=>{ const g=cx.createRadialGradient(cX,cY,0,cX,cY,r*(1+.1*Math.sin(t*2))); g.addColorStop(0,`hsla(${hue},100%,90%,${a*2})`); g.addColorStop(.4,`hsla(${hue},100%,70%,${a})`); g.addColorStop(1,'rgba(0,0,0,0)'); cx.beginPath(); cx.arc(cX,cY,r*(1+.1*Math.sin(t*2)),0,Math.PI*2); cx.fillStyle=g; cx.fill(); });
+    cx.beginPath(); cx.arc(cX,cY,5.5,0,Math.PI*2); cx.fillStyle=`rgba(255,255,255,${.85+.12*Math.sin(t*4)})`; cx.fill();
+    shocks.forEach(s=>{ s.r+=5; s.life*=.9; for(let ring=0;ring<3;ring++){ cx.beginPath(); cx.arc(s.x,s.y,s.r*(ring+1)*.44,0,Math.PI*2); cx.strokeStyle=`hsla(${ring*60+t*20},100%,80%,${s.life*(3-ring)*.1})`; cx.lineWidth=1.3; cx.stroke(); } });
+    shocks=shocks.filter(s=>s.life>0.02);
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══════════════════════════════════════
+   THREE.JS 3D FIELD
+══════════════════════════════════════ */
+(function wandaField(){
+  const container=document.getElementById('wh-field');
+  const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('wh-canvas'),antialias:!isMobile,alpha:false});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,isMobile?1.5:2));
+  renderer.setClearColor(0x03020f,1);
+  const scene=new THREE.Scene();
+  scene.fog=new THREE.FogExp2(0x03020f,.018);
+  function getSz(){ return{w:container.clientWidth,h:container.clientHeight}; }
+  let {w,h}=getSz();
+  renderer.setSize(w,h);
+  const camera=new THREE.PerspectiveCamera(62,w/h,.1,300);
+  camera.position.set(0,8,25);
+  scene.add(new THREE.AmbientLight(0x0a0a1a,3));
+  [[0xffd166,3,[0,0,0],40],[0x00e5ff,2,[8,4,0],35],[0xb44dff,2,[-8,4,0],35]].forEach(([c,i,p,d])=>{ const l=new THREE.PointLight(c,i,d); l.position.set(...p); scene.add(l); });
+  function mkTex(lines,color){ const cw=512,ch=256,cv2=document.createElement('canvas'); cv2.width=cw; cv2.height=ch; const ctx=cv2.getContext('2d'); ctx.clearRect(0,0,cw,ch); const lh=28,sy=ch/2-(lines.length*lh)/2+lh/2; lines.forEach((ln,i)=>{ ctx.font=`20px Share Tech Mono,monospace`; ctx.fillStyle=color; ctx.textAlign='center'; ctx.shadowColor=color; ctx.shadowBlur=10; ctx.fillText(ln,cw/2,sy+i*lh); }); return new THREE.CanvasTexture(cv2); }
+  function mkSp(lines,color){ const t=mkTex(lines,color); return new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false})); }
+  const allNodes=[];
+  const TD=[
+    {label:'Cardinal Gates',sub:'Perfect Nobility',formula:'t1 = cause\nfirst principle',color:0x00e5ff},
+    {label:'Horus Luminaries',sub:'Mind Imaginings',formula:'H|psi> = ih dpsi/dt',color:0x22ccff},
+    {label:'Ecliptic',sub:'Thought Forms',formula:'ecc * cos(theta+omega)',color:0x4499ff},
+    {label:'Vibration',sub:'Visible Bodies',formula:'A * sin(2pi*f*t)',color:0x6677ff},
+    {label:'Images',sub:'Rationalizations',formula:'|img> = Sum p_i|psi_i>',color:0x8855ff},
+    {label:'Strategies',sub:'Manifestations',formula:'nabla dot F = manifest',color:0xaa33ff},
+    {label:'Expression',sub:'Luna',formula:'Luna * e^(i*phi)',color:0xcc11ff},
+  ];
+  const SD=[
+    {label:'Hearing',formula:'d(signal)/dt',color:0x44ffcc},{label:'Courage',formula:'integral 1/fear dt',color:0x33ff99},
+    {label:'Wisdom',formula:'integral know*t dt',color:0x22ff77},{label:'Discipline',formula:'Sum(will*dt)',color:0x11ff55},
+    {label:'Consciousness',formula:'riro = awareness^inf',color:0x00ff44},{label:'Imagination',formula:'(desire+fire)^2',color:0x44ff22},
+    {label:'Balance',formula:'cause <-> effect',color:0x88ff00},{label:'Gift of Desire',formula:'feeling + emotion',color:0xccff00},
+    {label:'Clairvoyance',formula:'dpsi/d(hidden)',color:0xffee00},{label:'Prayer Thanks',formula:'cardinal * commune',color:0xffbb00},
+    {label:'Fountain News',formula:'fixed broadcast',color:0xff8800},{label:'Strength Rebirth',formula:'mutable transform',color:0xff5500},
+  ];
+  const AD=[
+    {label:'Agent One',formula:'material loop',color:0xff9944},{label:'Agent Two',formula:'design tensor labor',color:0xff7722},
+    {label:'Agent Three',formula:'task * nabla design',color:0xff5500},{label:'Agent Four',formula:'task material loop',color:0xff3300},
+  ];
+  const TM=[
+    {label:'Ignorance',color:0x330011},{label:'Grief',color:0x440022},{label:'Excess',color:0x330033},{label:'Concupiscence',color:0x220044},
+    {label:'Unrighteousness',color:0x110033},{label:'Greed',color:0x220055},{label:'Error',color:0x110044},{label:'Envy',color:0x000033},
+    {label:'Treachery',color:0x110055},{label:'Anger',color:0x220044},{label:'Recklessness',color:0x330055},{label:'Cruelty',color:0x440066},
+  ];
+  function buildNode(d,pos,size){
+    const grp=new THREE.Group(); grp.position.set(...pos);
+    const mesh=new THREE.Mesh(new THREE.SphereGeometry(size,16,16),new THREE.MeshPhongMaterial({color:d.color,emissive:d.color,emissiveIntensity:.38,transparent:true,opacity:.82,shininess:80}));
+    grp.add(mesh);
+    grp.add(new THREE.Mesh(new THREE.SphereGeometry(size*2,8,8),new THREE.MeshBasicMaterial({color:d.color,transparent:true,opacity:.04,side:THREE.BackSide})));
+    const lns=d.sub?[d.label,d.sub]:[d.label];
+    const hex='#'+d.color.toString(16).padStart(6,'0');
+    const sp=mkSp(lns,hex); sp.position.set(0,size+1,0); sp.scale.set(3.8,d.sub?1.9:1,1); grp.add(sp);
+    if(d.formula){ const fSp=mkSp(d.formula.split('\n'),'rgba(200,220,255,0.6)'); fSp.position.set(0,size+2.5,0); fSp.scale.set(4.2,d.formula.split('\n').length,1); fSp.material.opacity=0; fSp.userData.fml=true; grp.add(fSp); }
+    scene.add(grp);
+    allNodes.push({grp,data:d,pos:new THREE.Vector3(...pos),mesh,size});
+  }
+  buildNode({label:':WANDAHILL:',sub:'Imagination in Contract',formula:'Psi(s,t) = Sum alpha_i |s_i> x |t_i>',color:0xffd166},[0,0,0],1.2);
+  TD.forEach((n,i)=>{ const a=(i/7)*Math.PI*2; buildNode(n,[6*Math.cos(a),1.5,6*Math.sin(a)],.44); });
+  SD.forEach((n,i)=>{ const a=(i/12)*Math.PI*2; buildNode(n,[11*Math.cos(a),-1,11*Math.sin(a)],.36); });
+  AD.forEach((n,i)=>{ const a=(i/4)*Math.PI*2+Math.PI/4; buildNode(n,[4.5*Math.cos(a),4,4.5*Math.sin(a)],.38); });
+  TM.forEach((n,i)=>{ const a=(i/12)*Math.PI*2; buildNode(n,[15*Math.cos(a),-5,15*Math.sin(a)],.26); });
+  function addLine(p1,p2,col,op=.12){ const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...p1),new THREE.Vector3(...p2)]); scene.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op,depthWrite:false}))); }
+  allNodes.slice(1,8).forEach(n=>addLine([0,0,0],n.pos.toArray(),0xffd166,.1));
+  for(let i=1;i<8;i++){ const a=allNodes[i],b=allNodes[i<7?i+1:1]; addLine(a.pos.toArray(),b.pos.toArray(),0x00e5ff,.07); }
+  for(let i=8;i<20;i++){ const a=allNodes[i],b=allNodes[i<19?i+1:8]; addLine(a.pos.toArray(),b.pos.toArray(),0x44ff99,.05); }
+  for(let i=21;i<25;i++){ const a=allNodes[i],b=allNodes[i<24?i+1:21]; addLine(a.pos.toArray(),b.pos.toArray(),0xff7722,.09); }
+  allNodes.slice(1,8).forEach(n=>addLine([0,0,0],n.pos.toArray(),0xff9944,.06));
+  // Reduced vector field for mobile
+  const gridS=isMobile?3:5, gridR=isMobile?10:12;
+  const virtP=allNodes.slice(0,25).map(n=>n.pos);
+  const torP=allNodes.slice(25).map(n=>n.pos);
+  function cVec(x,y,z){ let vx=0,vy=0,vz=0; virtP.forEach(p=>{ const dx=p.x-x,dy=p.y-y,dz=p.z-z,d2=dx*dx+dy*dy+dz*dz+.5,s=.5/d2; vx+=dx*s;vy+=dy*s;vz+=dz*s; }); torP.forEach(p=>{ const dx=p.x-x,dy=p.y-y,dz=p.z-z,d2=dx*dx+dy*dy+dz*dz+.5,s=.25/d2; vx-=dx*s;vy-=dy*s;vz-=dz*s; }); const m=Math.sqrt(vx*vx+vy*vy+vz*vz)+.001; return new THREE.Vector3(vx/m,vy/m,vz/m); }
+  const fArrows=[];
+  for(let xi=0;xi<=gridS;xi++) for(let zi=0;zi<=gridS;zi++) for(let yi=0;yi<=2;yi++){
+    const x=-gridR+xi*(gridR*2/gridS), z=-gridR+zi*(gridR*2/gridS), y=-2+yi*2.5;
+    const dir=cVec(x,y,z); const col=y>2?0x00e5ff:y>0?0xb44dff:0xff9944;
+    const arr=new THREE.ArrowHelper(dir,new THREE.Vector3(x,y,z),.85,col,.32,.16);
+    arr.line.material.transparent=true; arr.line.material.opacity=.2; arr.cone.material.transparent=true; arr.cone.material.opacity=.25;
+    scene.add(arr); fArrows.push(arr);
+  }
+  // Camera
+  const keys={};let camYaw=0,camPitch=0;
+  const camPos=new THREE.Vector3(0,8,25);
+  let fieldInView=false;
+  new IntersectionObserver(es=>{fieldInView=es[0].isIntersecting;},{threshold:.2}).observe(document.getElementById('wh-field-section'));
+  document.addEventListener('keydown',e=>{ if(fieldInView){ keys[e.code]=true; if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault(); } });
+  document.addEventListener('keyup',e=>{ keys[e.code]=false; });
+  function updateCam(){ const spd=(keys.ShiftLeft||keys.ShiftRight)?.25:.07,rs=.02;
+    if(keys.ArrowLeft)camYaw+=rs; if(keys.ArrowRight)camYaw-=rs;
+    if(keys.ArrowUp)camPitch=Math.min(camPitch+rs,1.2); if(keys.ArrowDown)camPitch=Math.max(camPitch-rs,-1.2);
+    const fwd=new THREE.Vector3(-Math.sin(camYaw)*Math.cos(camPitch),0,-Math.cos(camYaw)*Math.cos(camPitch));
+    const rgt=new THREE.Vector3(Math.cos(camYaw),0,-Math.sin(camYaw));
+    if(keys.KeyW)camPos.addScaledVector(fwd,spd); if(keys.KeyS)camPos.addScaledVector(fwd,-spd);
+    if(keys.KeyA)camPos.addScaledVector(rgt,-spd); if(keys.KeyD)camPos.addScaledVector(rgt,spd);
+    if(keys.KeyQ)camPos.y+=spd*.7; if(keys.KeyE)camPos.y-=spd*.7;
+    camera.position.copy(camPos); camera.rotation.order='YXZ'; camera.rotation.y=camYaw; camera.rotation.x=camPitch;
+  }
+  // Joysticks
+  const jL={active:false,dx:0,dy:0},jR={active:false,dx:0,dy:0};
+  function bindJoy(id,j,thumbId){ const el=document.getElementById(id),thumb=document.getElementById(thumbId);
+    el.addEventListener('touchstart',e=>{ e.preventDefault(); j.active=true; j.sx=e.touches[0].clientX; j.sy=e.touches[0].clientY; },{passive:false});
+    el.addEventListener('touchmove',e=>{ e.preventDefault(); if(!j.active)return; j.dx=Math.max(-1,Math.min(1,(e.touches[0].clientX-j.sx)/38)); j.dy=Math.max(-1,Math.min(1,(e.touches[0].clientY-j.sy)/38)); thumb.style.transform=`translate(calc(-50% + ${j.dx*20}px),calc(-50% + ${j.dy*20}px))`; },{passive:false});
+    el.addEventListener('touchend',()=>{ j.active=false; j.dx=0; j.dy=0; thumb.style.transform='translate(-50%,-50%)'; });
+  }
+  bindJoy('tj-l',jL,'jlt'); bindJoy('tj-r',jR,'jrt');
+  function updateTouch(){ if(jL.active){ const fwd=new THREE.Vector3(-Math.sin(camYaw),0,-Math.cos(camYaw)),rgt=new THREE.Vector3(Math.cos(camYaw),0,-Math.sin(camYaw)); camPos.addScaledVector(fwd,-jL.dy*.08); camPos.addScaledVector(rgt,jL.dx*.08); } if(jR.active){ camYaw-=jR.dx*.025; camPitch=Math.max(-1.2,Math.min(1.2,camPitch-jR.dy*.025)); } }
+  // HUD
+  let hudT=0; const qS=['|psi> = superposition','dx*dp >= h-bar/2','entangled: psiA x psiB','|0>+|1>/sqrt(2)','wave collapse','E = h*f','Seer observes all']; let qsi=0;
+  function updateHUD(time){ document.getElementById('hud-coords').textContent=`x:${camPos.x.toFixed(1)} y:${camPos.y.toFixed(1)} z:${camPos.z.toFixed(1)}`; if(time-hudT>2.8){hudT=time;qsi=(qsi+1)%qS.length;document.getElementById('hud-state').textContent=qS[qsi];} let near=null,nearD=Infinity; allNodes.forEach(n=>{ const d=camPos.distanceTo(n.pos); if(d<nearD){nearD=d;near=n;} }); if(near&&nearD<22){document.getElementById('hud-node').textContent=near.data.label; document.getElementById('hud-form').textContent=near.data.formula||''; document.getElementById('hud-desc2').textContent=near.data.sub||'';} near&&near.grp.children.forEach(c=>{if(c.userData.fml)c.material.opacity=Math.max(0,Math.min(1,(22-nearD)/18));}); }
+  let t3=0;
+  function animate(){ requestAnimationFrame(animate); t3+=.011; updateCam(); updateTouch();
+    allNodes.forEach((n,i)=>{ n.mesh.scale.setScalar(1+.07*Math.sin(t3*1.4+i*.4)); n.mesh.material.emissiveIntensity=.28+.17*Math.sin(t3+i*.28); n.grp.children.forEach(c=>{if(c.userData.fml&&camPos.distanceTo(n.pos)>22)c.material.opacity=Math.max(0,c.material.opacity-.008);}); });
+    fArrows.forEach((fa,i)=>{ fa.line.material.opacity=.09+.08*Math.abs(Math.sin(t3*.45+i*.14)); fa.cone.material.opacity=.1+.09*Math.abs(Math.sin(t3*.45+i*.14)); });
+    updateHUD(t3); renderer.render(scene,camera);
+  }
+  addEventListener('resize',()=>{ const{w:nw,h:nh}=getSz(); if(nw>0&&nh>0){renderer.setSize(nw,nh);camera.aspect=nw/nh;camera.updateProjectionMatrix();} });
+  animate();
+})();
+</script>
+</body>
+</html>
